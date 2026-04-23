@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:se7ty/core/routes/routes.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
+import 'package:se7ty/core/utils/prefs_helper.dart';
 import 'package:se7ty/core/widgets/dialogs.dart';
 import 'package:se7ty/features/auth/data/model/doctor_model.dart';
 import 'package:se7ty/features/auth/presentation/cubit/auth_cubit.dart';

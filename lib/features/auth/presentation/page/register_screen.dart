@@ -12,7 +12,6 @@ import 'package:se7ty/features/auth/data/model/user_type_enum.dart';
 import 'package:se7ty/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:se7ty/features/auth/presentation/cubit/auth_states.dart';
 
-
 class RegisterScreen extends StatefulWidget {
   final bool isDoctor;
   const RegisterScreen({super.key, required this.isDoctor});
@@ -230,11 +229,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   Gap(20.h),
                 ],
               ),
-              ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:se7ty/core/routes/routes.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
-import 'package:se7ty/core/widgets/custom_button.dart';
 import 'package:se7ty/features/auth/data/model/doctor_model.dart';
 
 class DoctorProfileScreen extends StatelessWidget {

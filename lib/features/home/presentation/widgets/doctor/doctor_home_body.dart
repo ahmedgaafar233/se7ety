@@ -18,7 +18,7 @@ class DoctorHomeBody extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Gap(20.h),
-            _buildHeader(),
+            _buildHeader(context),
             Gap(25.h),
             _buildStatsGrid(),
             Gap(25.h),
@@ -32,7 +32,7 @@ class DoctorHomeBody extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -55,7 +55,7 @@ class DoctorHomeBody extends StatelessWidget {
         ),
         InkWell(
           onTap: () async {
-            await PrefsHelper.clear();
+            await PrefsHelper.logout();
             if (context.mounted) {
               context.go(Routes.welcome);
             }
