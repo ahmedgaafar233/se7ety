@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:se7ty/features/auth/presentation/page/login_screen.dart';
 import 'package:se7ty/features/auth/presentation/page/register_screen.dart';
-import 'package:se7ty/features/home/presentation/page/doctor/doctor_main_view.dart';
-import 'package:se7ty/features/home/presentation/page/patient/patient_main_view.dart';
+import 'package:se7ty/features/home/presentation/page/doctor/doctor_main_app.dart';
+import 'package:se7ty/features/home/presentation/page/patient/patient_main_app.dart';
 import 'package:se7ty/features/onboarding/presentation/onboarding_view.dart';
 import 'package:se7ty/features/auth/presentation/role_view.dart';
 import 'package:se7ty/features/onboarding/presentation/splash_view.dart';
@@ -37,9 +37,9 @@ class AppRouter {
           builder: (_) => RegisterScreen(isDoctor: isDoctor),
         );
       case AppRoutes.patientHome:
-        return MaterialPageRoute(builder: (_) => const PatientMainView());
+        return MaterialPageRoute(builder: (_) => const PatientMainApp());
       case AppRoutes.doctorHome:
-        return MaterialPageRoute(builder: (_) => const DoctorMainView());
+        return MaterialPageRoute(builder: (_) => const DoctorMainApp());
       default:
         return null;
     }

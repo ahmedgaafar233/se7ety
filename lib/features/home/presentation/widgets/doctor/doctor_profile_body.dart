@@ -94,7 +94,7 @@ class DoctorProfileBody extends StatelessWidget {
           const Divider(),
           _buildSettingsTile(Icons.logout, 'تسجيل الخروج', () {
             PrefsHelper.logout();
-            pushAndRemoveUntil(context, const SplashView());
+            pushAndRemoveUntil(context, const SplashScreen());
           }, isDestructive: true),
         ],
       ),
