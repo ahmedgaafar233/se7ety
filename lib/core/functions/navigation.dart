@@ -14,6 +14,14 @@ pushReplacement(BuildContext context, Widget widget) {
   );
 }
 
+pushNamed(BuildContext context, String routeName, {Object? arguments}) {
+  Navigator.pushNamed(context, routeName, arguments: arguments);
+}
+
+pushReplacementNamed(BuildContext context, String routeName, {Object? arguments}) {
+  Navigator.pushReplacementNamed(context, routeName, arguments: arguments);
+}
+
 pushAndRemoveUntil(BuildContext context, Widget widget) {
   Navigator.pushAndRemoveUntil(
     context,

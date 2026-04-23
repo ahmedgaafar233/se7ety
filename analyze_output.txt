@@ -1,0 +1,9 @@
+Analyzing register_screen.dart...
+
+  error - register_screen.dart:52:9 - The named parameter 'builder' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'builder'. - undefined_named_parameter
+warning - register_screen.dart:14:8 - Unused import: 'package:se7ty/features/home/presentation/page/doctor/doctor_main_app.dart'. Try removing the import directive. - unused_import
+   info - register_screen.dart:92:74 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - register_screen.dart:115:74 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - register_screen.dart:138:74 - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+
+5 issues found.

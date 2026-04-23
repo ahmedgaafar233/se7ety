@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import 'package:se7ty/core/routing/app_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:se7ty/core/routes/routes.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
 import 'package:se7ty/core/utils/prefs_helper.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingView extends StatefulWidget {
   const OnboardingView({super.key});
@@ -19,43 +22,48 @@ class _OnboardingViewState extends State<OnboardingView> {
   final List<OnboardingModel> _pages = [
     OnboardingModel(
       image: 'assets/images/on1.png',
-      title: 'ابحث عن طبيبك',
-      description: 'أفضل الأطباء في جميع التخصصات متاحين الآن لحجز موعدك بسهولة.',
+      title: 'ابحث عن دكتور متخصص',
+      description: 'اكتشف مجموعة واسعة من الأطباء الخبراء والمتخصصين في مختلف المجالات.',
     ),
     OnboardingModel(
       image: 'assets/images/on2.png',
-      title: 'احجز موعدك',
-      description: 'اختر الوقت الذي يناسبك وقم بتأكيد حجزك في ثوانٍ معدودة.',
+      title: 'سهولة الحجز',
+      description: 'احجز مواعيدك بضغطة زر في أي وقت وفي أي مكان.',
     ),
     OnboardingModel(
       image: 'assets/images/on3.png',
-      title: 'تابع حالتك الصحية',
-      description: 'نحن هنا لمساعدتك في الحفاظ على صحتك ومتابعة أدويتك وفحوصاتك.',
+      title: 'أمن وسري',
+      description: 'كن مطمئناً لأن خصوصيتك وأمانك هما أهم أولوياتنا.',
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
         actions: [
           if (_currentIndex != 2)
             TextButton(
               onPressed: () {
                 PrefsHelper.setIsOnboarded(true);
-                Navigator.pushReplacementNamed(context, AppRoutes.role);
+                context.go(Routes.welcome);
               },
               child: Text(
                 'تخطي',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColors.primary,
-                    ),
+                style: GoogleFonts.cairo(
+                  color: AppColors.primary,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(20.w),
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
         child: Column(
           children: [
             Expanded(
@@ -79,13 +87,20 @@ class _OnboardingViewState extends State<OnboardingView> {
                       Text(
                         _pages[index].title,
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.displaySmall,
+                        style: GoogleFonts.cairo(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
                       ),
                       Gap(20.h),
                       Text(
                         _pages[index].description,
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        style: GoogleFonts.cairo(
+                          fontSize: 16.sp,
+                          color: AppColors.grey,
+                        ),
                       ),
                     ],
                   );
@@ -95,24 +110,49 @@ class _OnboardingViewState extends State<OnboardingView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Spacer(),
+                SmoothPageIndicator(
+                  controller: _pageController,
+                  count: _pages.length,
+                  effect: ExpandingDotsEffect(
+                    dotColor: Colors.grey.shade300,
+                    activeDotColor: AppColors.primary,
+                    dotHeight: 8.h,
+                    dotWidth: 8.w,
+                    expansionFactor: 4,
+                    spacing: 5.w,
+                  ),
+                ),
                 ElevatedButton(
                   onPressed: () {
                     if (_currentIndex == 2) {
                       PrefsHelper.setIsOnboarded(true);
-                      Navigator.pushReplacementNamed(context, AppRoutes.role);
+                      context.go(Routes.welcome);
                     } else {
                       _pageController.nextPage(
                         duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeIn,
+                        curve: Curves.easeInOut,
                       );
                     }
                   },
-                  child: Text(_currentIndex == 2 ? 'ابدأ الآن' : 'التالي'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                  child: Text(
+                    _currentIndex == 2 ? 'ابدأ الآن' : 'التالي',
+                    style: GoogleFonts.cairo(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ),
-            Gap(30.h),
+            Gap(50.h),
           ],
         ),
       ),

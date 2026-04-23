@@ -37,6 +37,15 @@ class PrefsHelper {
     await _prefs.remove('uid');
     await _prefs.remove('name');
     await _prefs.remove('role');
+    await _prefs.remove('is_profile_completed');
     await _prefs.setBool('is_logged_in', false);
+  }
+
+  static Future<void> setIsProfileCompleted(bool value) async {
+    await _prefs.setBool('is_profile_completed', value);
+  }
+
+  static bool getIsProfileCompleted() {
+    return _prefs.getBool('is_profile_completed') ?? false;
   }
 }

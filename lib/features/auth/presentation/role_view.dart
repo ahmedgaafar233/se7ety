@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import 'package:se7ty/core/routing/app_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart';
+import 'package:se7ty/core/routes/routes.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
 
 class RoleView extends StatelessWidget {
@@ -12,58 +14,114 @@ class RoleView extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
+          // Background Image
           Image.asset(
-            'assets/images/on1.png', // Background image from assets
+            'assets/images/role_bg.png',
             width: double.infinity,
             height: double.infinity,
             fit: BoxFit.cover,
           ),
+          
+          // Gradient Overlay
           Container(
-            color: Colors.black.withAlpha(128),
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withOpacity(0.1),
+                  Colors.white.withOpacity(0.6),
+                  Colors.white,
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
           ),
-          Padding(
-            padding: EdgeInsets.all(20.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Spacer(),
-                Text(
-                  'أهلاً بك في Se7ety',
-                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: Colors.white,
-                      ),
-                ),
-                Gap(10.h),
-                Text(
-                  'سجل الآن كـ طبيب أو مريض للبدء',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Colors.white,
-                      ),
-                ),
-                Gap(50.h),
-                _RoleButton(
-                  title: 'دكتور',
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.login,
-                      arguments: true,
-                    );
-                  },
-                ),
-                Gap(20.h),
-                _RoleButton(
-                  title: 'مريض',
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.login,
-                      arguments: false,
-                    );
-                  },
-                ),
-                const Spacer(),
-              ],
+          
+          // Content
+          SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Gap(80.h),
+                  Text(
+                    'أهلاً بك',
+                    style: GoogleFonts.cairo(
+                      fontSize: 32.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                  Gap(8.h),
+                  Text(
+                    'سجل واحجز عند دكتورك وأنت في البيت',
+                    textAlign: TextAlign.right,
+                    style: GoogleFonts.cairo(
+                      fontSize: 18.sp,
+                      color: AppColors.dark,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const Spacer(),
+                  
+                  // Bottom Container
+                  Container(
+                    width: double.infinity,
+                    padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.85),
+                      borderRadius: BorderRadius.circular(24.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'سجل دلوقتي كـ',
+                          style: GoogleFonts.cairo(
+                            fontSize: 20.sp,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Gap(24.h),
+                        
+                        // Doctor Button
+                        _RoleButton(
+                          title: 'دكتور',
+                          onPressed: () {
+                            context.push(
+                              Routes.login,
+                              extra: true,
+                            );
+                          },
+                        ),
+                        Gap(16.h),
+                        
+                        // Patient Button
+                        _RoleButton(
+                          title: 'مريض',
+                          onPressed: () {
+                            context.push(
+                              Routes.login,
+                              extra: false,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Gap(60.h),
+                ],
+              ),
             ),
           ),
         ],
@@ -87,13 +145,21 @@ class _RoleButton extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary.withAlpha(200),
-          padding: EdgeInsets.symmetric(vertical: 20.h),
+          backgroundColor: Colors.white,
+          foregroundColor: AppColors.primary,
+          padding: EdgeInsets.symmetric(vertical: 14.h),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
         ),
         onPressed: onPressed,
         child: Text(
           title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: GoogleFonts.cairo(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );

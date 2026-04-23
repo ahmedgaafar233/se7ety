@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'core/routing/app_router.dart';
+import 'core/routes/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
 import 'core/utils/prefs_helper.dart';
@@ -35,15 +35,14 @@ class Se7etyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
+        return MaterialApp.router(
           title: 'Se7ety',
           debugShowCheckedModeBanner: false,
           localizationsDelegates: context.localizationDelegates,
           supportedLocales: context.supportedLocales,
           locale: context.locale,
           theme: AppTheme.lightTheme,
-          initialRoute: AppRoutes.splash,
-          onGenerateRoute: AppRouter.onGenerateRoute,
+          routerConfig: AppRouter.router,
         );
       },
     );

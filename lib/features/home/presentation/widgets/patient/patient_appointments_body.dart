@@ -1,67 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
 
-class PatientAppointmentsBody extends StatelessWidget {
+class PatientAppointmentsBody extends StatefulWidget {
   const PatientAppointmentsBody({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
-        child: Column(
-          children: [
-            Gap(20.h),
-            _buildTabBar(),
-            Gap(20.h),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  _buildAppointmentList(isUpcoming: true),
-                  _buildAppointmentList(isUpcoming: false),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+  State<PatientAppointmentsBody> createState() => _PatientAppointmentsBodyState();
+}
+
+class _PatientAppointmentsBodyState extends State<PatientAppointmentsBody> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
   }
 
-  Widget _buildTabBar() {
-    return Container(
-      padding: EdgeInsets.all(5.r),
-      decoration: BoxDecoration(
-        color: AppColors.lightGrey,
-        borderRadius: BorderRadius.circular(15.r),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'مواعيدي',
+          style: GoogleFonts.cairo(
+            color: AppColors.primary,
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
-      child: TabBar(
-        indicatorColor: AppColors.primary,
-        indicatorPadding: EdgeInsets.symmetric(horizontal: 10.w),
-        indicatorWeight: 3,
-        unselectedLabelColor: AppColors.grey,
-        labelColor: AppColors.primary,
-        dividerColor: Colors.transparent,
-        tabs: [
-          _buildTab('المواعيد القادمة'),
-          _buildTab('المواعيد السابقة'),
+      body: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+            padding: EdgeInsets.all(5.r),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF8FAFD),
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              indicator: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              unselectedLabelColor: AppColors.grey,
+              labelColor: Colors.white,
+              labelStyle: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 14.sp),
+              unselectedLabelStyle: GoogleFonts.cairo(fontSize: 14.sp),
+              dividerColor: Colors.transparent,
+              indicatorSize: TabBarIndicatorSize.tab,
+              tabs: const [
+                Tab(text: 'المواعيد القادمة'),
+                Tab(text: 'المواعيد السابقة'),
+              ],
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildAppointmentList(isUpcoming: true),
+                _buildAppointmentList(isUpcoming: false),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTab(String title) {
-    return Tab(
-      child: Text(title, style: TextStyle(fontSize: 14.sp)),
-    );
-  }
-
   Widget _buildAppointmentList({required bool isUpcoming}) {
     return ListView.separated(
-      itemCount: 3,
+      itemCount: 4,
+      padding: EdgeInsets.all(20.r),
       separatorBuilder: (_, __) => Gap(15.h),
       itemBuilder: (context, index) {
         return _buildAppointmentCard(isUpcoming);
@@ -77,24 +97,25 @@ class PatientAppointmentsBody extends StatelessWidget {
         borderRadius: BorderRadius.circular(20.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 15,
             offset: const Offset(0, 5),
           ),
         ],
+        border: Border.all(color: Colors.grey.withOpacity(0.05)),
       ),
       child: Column(
         children: [
           Row(
             children: [
               Container(
-                width: 60.w,
-                height: 60.h,
+                width: 65.w,
+                height: 65.h,
                 decoration: BoxDecoration(
-                  color: AppColors.lightGrey,
-                  borderRadius: BorderRadius.circular(12.r),
+                  color: const Color(0xFFE6EEF9),
+                  borderRadius: BorderRadius.circular(14.r),
                 ),
-                child: const Icon(Icons.person, color: AppColors.primary, size: 25),
+                child: const Icon(Icons.person, color: AppColors.primary, size: 30),
               ),
               Gap(15.w),
               Expanded(
@@ -103,35 +124,36 @@ class PatientAppointmentsBody extends StatelessWidget {
                   children: [
                     Text(
                       'د. أحمد محمود',
-                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.cairo(fontSize: 16.sp, fontWeight: FontWeight.bold),
                     ),
                     Text(
                       'أخصائي طب وجراحة الأذن',
-                      style: TextStyle(fontSize: 14.sp, color: AppColors.grey),
+                      style: GoogleFonts.cairo(fontSize: 13.sp, color: AppColors.grey),
                     ),
                   ],
                 ),
               ),
-              if (isUpcoming)
-                const Icon(Icons.more_vert, color: AppColors.grey)
-              else
+              if (!isUpcoming)
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10.r),
+                    color: Colors.green.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
-                  child: Text('مكتمل', style: TextStyle(color: AppColors.primary, fontSize: 12.sp)),
+                  child: Text(
+                    'مكتمل',
+                    style: GoogleFonts.cairo(color: Colors.green, fontSize: 11.sp, fontWeight: FontWeight.bold),
+                  ),
                 ),
             ],
           ),
           Gap(15.h),
-          const Divider(thickness: 0.5),
-          Gap(10.h),
+          const Divider(thickness: 0.5, color: Color(0xFFF1F1F1)),
+          Gap(12.h),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildInfoRow(Icons.calendar_today, 'الاثنين 20 يناير'),
-              const Spacer(),
+              _buildInfoRow(Icons.calendar_today_outlined, 'الاثنين 20 يناير'),
               _buildInfoRow(Icons.access_time, '10:00 صباحاً'),
             ],
           ),
@@ -143,10 +165,14 @@ class PatientAppointmentsBody extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: () {},
                     style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.red),
+                      side: const BorderSide(color: Color(0xFFE6E6E6)),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
                     ),
-                    child: const Text('إلغاء الموعد', style: TextStyle(color: Colors.red)),
+                    child: Text(
+                      'إلغاء الموعد',
+                      style: GoogleFonts.cairo(color: Colors.red, fontSize: 13.sp, fontWeight: FontWeight.w600),
+                    ),
                   ),
                 ),
                 Gap(15.w),
@@ -155,9 +181,14 @@ class PatientAppointmentsBody extends StatelessWidget {
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
                     ),
-                    child: const Text('إعادة حجز', style: TextStyle(color: Colors.white)),
+                    child: Text(
+                      'إعادة حجز',
+                      style: GoogleFonts.cairo(color: Colors.white, fontSize: 13.sp, fontWeight: FontWeight.w600),
+                    ),
                   ),
                 ),
               ],
@@ -171,10 +202,19 @@ class PatientAppointmentsBody extends StatelessWidget {
   Widget _buildInfoRow(IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: AppColors.primary),
+        Icon(icon, size: 16.sp, color: AppColors.primary),
         Gap(8.w),
-        Text(text, style: TextStyle(fontSize: 12.sp, color: AppColors.grey)),
+        Text(
+          text,
+          style: GoogleFonts.cairo(fontSize: 12.sp, color: const Color(0xFF7E8CA0)),
+        ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 }

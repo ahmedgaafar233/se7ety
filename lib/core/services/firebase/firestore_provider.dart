@@ -13,4 +13,14 @@ class FirestoreProvider {
   static Future<void> addDoctor(DoctorModel doctor) async {
     await doctorCollection.doc(doctor.uid).set(doctor.toJson());
   }
+
+  static Future<List<DoctorModel>> getTopRatedDoctors() async {
+    final querySnapshot = await doctorCollection
+        .orderBy('rating', descending: true)
+        .limit(10)
+        .get();
+    return querySnapshot.docs
+        .map((doc) => DoctorModel.fromJson(doc.data()))
+        .toList();
+  }
 }

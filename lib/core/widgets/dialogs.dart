@@ -6,18 +6,9 @@ showLoadingDialog(BuildContext context) {
   showDialog(
     context: context,
     barrierDismissible: false,
-    builder: (context) => Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Lottie.asset(
-          'assets/lotties/loading.json', // The instructor's path from screenshot
-          width: 150,
-          errorBuilder: (context, error, stackTrace) {
-            // Fallback if loading.json is missing or corrupted
-            return const CircularProgressIndicator(color: AppColors.primary);
-          },
-        ),
-      ],
+    barrierColor: Colors.black.withOpacity(0.7),
+    builder: (context) => Center(
+      child: Lottie.asset('assets/lotties/loading.json', width: 250),
     ),
   );
 }

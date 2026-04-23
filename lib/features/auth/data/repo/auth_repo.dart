@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Needed for direct fetch in login for now
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import '../../../../core/services/firebase/errors/failure.dart';
 import '../../../../core/services/firebase/firestore_provider.dart';
 import '../../../../core/utils/prefs_helper.dart';
@@ -57,13 +59,13 @@ class AuthRepo {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return left(Failure(message: 'المستخدم غير موجود.'));
-      } else if (e.code == 'wrong-password') {
-        return left(Failure(message: 'كلمة المرور غير صحيحة.'));
+      } else if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
+        return left(Failure(message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'));
       } else {
-        return left(Failure(message: 'حدث خطأ في عملية تسجيل الدخول.'));
+        return left(Failure(message: 'حدث خطأ في عملية تسجيل الدخول:\n${e.message}'));
       }
     } catch (e) {
-      return left(Failure(message: 'حدث خطأ غير متوقع.'));
+      return left(Failure(message: 'حدث خطأ غير متوقع:\n$e'));
     }
   }
 
@@ -160,5 +162,28 @@ class AuthRepo {
   static Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
     await PrefsHelper.logout();
+  }
+
+  // Update Doctor Profile (The logic from instructor screenshots)
+  static Future<Either<Failure, Unit>> updateDoctorProfile(DoctorModel doctor) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('doctor')
+          .doc(doctor.uid)
+          .update(doctor.toJson());
+      return right(unit);
+    } catch (e) {
+      return left(Failure(message: 'حدث خطأ أثناء تحديث البيانات.'));
+    }
+  }
+
+  // Upload Image to Firebase Storage
+  static Future<String> uploadImage(File file) async {
+    final ref = FirebaseStorage.instance
+        .ref()
+        .child('doctors')
+        .child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
+    await ref.putFile(file);
+    return await ref.getDownloadURL();
   }
 }

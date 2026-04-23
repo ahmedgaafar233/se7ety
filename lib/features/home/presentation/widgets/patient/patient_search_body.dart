@@ -1,57 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
 
-class PatientSearchBody extends StatelessWidget {
+class PatientSearchBody extends StatefulWidget {
   const PatientSearchBody({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _buildHeader(context),
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              children: [
-                Gap(20.h),
-                _buildSearchField(),
-                Gap(20.h),
-                _buildFilterChips(),
-                Gap(20.h),
-                Expanded(
-                  child: _buildSearchResults(),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  State<PatientSearchBody> createState() => _PatientSearchBodyState();
+}
 
-  Widget _buildHeader(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 120.h,
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30.r),
-          bottomRight: Radius.circular(30.r),
-        ),
-      ),
-      child: Center(
-        child: Text(
+class _PatientSearchBodyState extends State<PatientSearchBody> {
+  int _selectedFilter = 0;
+  final List<String> filters = ['الكل', 'دكتور قلب', 'جراحة عامة', 'أطفال', 'عيون', 'أسنان'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
           'ابحث عن دكتور',
-          style: TextStyle(
+          style: GoogleFonts.cairo(
             color: Colors.white,
-            fontSize: 20.sp,
+            fontSize: 18.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(25.r),
+          ),
+        ),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(20.w, 20.h, 20.w, 10.h),
+            child: Column(
+              children: [
+                _buildSearchField(),
+                Gap(15.h),
+                _buildFilterChips(),
+              ],
+            ),
+          ),
+          Expanded(
+            child: _buildSearchResults(),
+          ),
+        ],
       ),
     );
   }
@@ -60,50 +61,54 @@ class PatientSearchBody extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
-        color: AppColors.searchBackground,
-        borderRadius: BorderRadius.circular(15.r),
+        color: const Color(0xFFF8FAFD),
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: Colors.grey.withOpacity(0.1)),
       ),
       child: TextField(
+        textAlign: TextAlign.right,
         decoration: InputDecoration(
           hintText: 'عن ماذا تبحث؟',
-          hintStyle: TextStyle(color: AppColors.grey),
+          hintStyle: GoogleFonts.cairo(color: AppColors.grey, fontSize: 14.sp),
           border: InputBorder.none,
-          suffixIcon: Container(
-            margin: EdgeInsets.symmetric(vertical: 8.h),
-            padding: EdgeInsets.all(8.r),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(10.r),
-            ),
-            child: const Icon(Icons.search, color: Colors.white, size: 20),
-          ),
+          prefixIcon: const Icon(Icons.search, color: AppColors.primary),
         ),
       ),
     );
   }
 
   Widget _buildFilterChips() {
-    final List<String> filters = ['الكل', 'القلب', 'العيون', 'الأسنان', 'الأطفال'];
     return SizedBox(
-      height: 40.h,
+      height: 45.h,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: filters.length,
         separatorBuilder: (_, __) => Gap(10.w),
         itemBuilder: (context, index) {
-          final isSelected = index == 0;
-          return Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : AppColors.searchBackground,
-              borderRadius: BorderRadius.circular(15.r),
-            ),
-            child: Text(
-              filters[index],
-              style: TextStyle(
-                color: isSelected ? Colors.white : AppColors.primary,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+          final isSelected = _selectedFilter == index;
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                _selectedFilter = index;
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.w),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary : const Color(0xFFF8FAFD),
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(
+                  color: isSelected ? AppColors.primary : Colors.grey.withOpacity(0.1),
+                ),
+              ),
+              child: Text(
+                filters[index],
+                style: GoogleFonts.cairo(
+                  color: isSelected ? Colors.white : AppColors.primary,
+                  fontSize: 14.sp,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
               ),
             ),
           );
@@ -114,19 +119,19 @@ class PatientSearchBody extends StatelessWidget {
 
   Widget _buildSearchResults() {
     return ListView.separated(
-      itemCount: 5,
-      padding: EdgeInsets.only(bottom: 20.h),
+      itemCount: 8,
+      padding: EdgeInsets.all(20.r),
       separatorBuilder: (_, __) => Gap(15.h),
       itemBuilder: (context, index) {
         return Container(
-          padding: EdgeInsets.all(16.r),
+          padding: EdgeInsets.all(12.r),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20.r),
+            borderRadius: BorderRadius.circular(16.r),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 10,
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
             ],
@@ -134,13 +139,13 @@ class PatientSearchBody extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 70.w,
-                height: 70.h,
+                width: 80.w,
+                height: 80.h,
                 decoration: BoxDecoration(
-                  color: AppColors.lightGrey,
-                  borderRadius: BorderRadius.circular(15.r),
+                  color: const Color(0xFFE6EEF9),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
-                child: const Icon(Icons.person, color: AppColors.primary, size: 30),
+                child: const Icon(Icons.person, color: AppColors.primary, size: 35),
               ),
               Gap(15.w),
               Expanded(
@@ -149,24 +154,27 @@ class PatientSearchBody extends StatelessWidget {
                   children: [
                     Text(
                       'د. سارة أحمد',
-                      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.cairo(fontSize: 16.sp, fontWeight: FontWeight.bold),
                     ),
                     Text(
                       'أخصائية طب العيون',
-                      style: TextStyle(fontSize: 14.sp, color: AppColors.grey),
+                      style: GoogleFonts.cairo(fontSize: 14.sp, color: AppColors.grey),
                     ),
                     Gap(5.h),
                     Row(
                       children: [
-                        const Icon(Icons.star, color: Colors.amber, size: 16),
+                        const Icon(Icons.star, color: Colors.amber, size: 18),
                         Gap(5.w),
-                        Text('4.9 (120 تقييم)', style: TextStyle(fontSize: 12.sp, color: AppColors.grey)),
+                        Text(
+                          '4.9 (120 تقييم)',
+                          style: GoogleFonts.cairo(fontSize: 12.sp, color: AppColors.grey),
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.grey),
+              Icon(Icons.arrow_forward_ios, size: 16.sp, color: AppColors.primary),
             ],
           ),
         );

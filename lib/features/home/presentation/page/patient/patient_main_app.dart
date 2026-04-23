@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:se7ty/features/home/presentation/widgets/patient/patient_home_body.dart';
 import 'package:se7ty/features/home/presentation/widgets/patient/patient_search_body.dart';
 import 'package:se7ty/features/home/presentation/widgets/patient/patient_appointments_body.dart';
@@ -44,14 +45,18 @@ class _PatientMainAppState extends State<PatientMainApp> {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
           child: GNav(
-            rippleColor: AppColors.primary.withOpacity(0.1),
-            hoverColor: AppColors.primary.withOpacity(0.1),
+            rippleColor: Colors.grey.withOpacity(0.1),
+            hoverColor: Colors.grey.withOpacity(0.1),
             gap: 8,
-            activeColor: AppColors.primary,
+            activeColor: Colors.white,
             iconSize: 24,
             padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
             duration: const Duration(milliseconds: 400),
-            tabBackgroundColor: AppColors.primary.withOpacity(0.1),
+            tabBackgroundColor: AppColors.primary,
+            textStyle: GoogleFonts.cairo(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
             color: AppColors.grey,
             tabs: const [
               GButton(

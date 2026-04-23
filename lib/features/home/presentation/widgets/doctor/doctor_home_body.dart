@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
 import 'package:se7ty/core/utils/prefs_helper.dart';
+import 'package:go_router/go_router.dart';
+import 'package:se7ty/core/routes/routes.dart';
 
 class DoctorHomeBody extends StatelessWidget {
   const DoctorHomeBody({super.key});
@@ -51,10 +53,18 @@ class DoctorHomeBody extends StatelessWidget {
             ),
           ],
         ),
-        CircleAvatar(
-          radius: 25.r,
-          backgroundColor: AppColors.accent,
-          child: const Icon(Icons.person, color: AppColors.primary),
+        InkWell(
+          onTap: () async {
+            await PrefsHelper.clear();
+            if (context.mounted) {
+              context.go(Routes.welcome);
+            }
+          },
+          child: CircleAvatar(
+            radius: 25.r,
+            backgroundColor: Colors.red.withOpacity(0.1),
+            child: const Icon(Icons.logout, color: Colors.red),
+          ),
         ),
       ],
     );
