@@ -9,4 +9,5 @@ class Routes {
   static const String doctorMainApp = '/doctorMainApp';
   static const String doctorProfile = '/doctorProfile';
   static const String booking = '/booking';
+  static const String specializationDoctors = '/specializationDoctors';
 }

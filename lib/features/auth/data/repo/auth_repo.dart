@@ -91,7 +91,7 @@ class AuthRepo {
       );
 
       // Save to Firestore using static Provider call
-      await FirestoreProvider.addDoctor(doctorData);
+      await FirebaseProvider.addDoctor(doctorData);
 
       // Cache locally
       await PrefsHelper.saveUserData(
@@ -135,7 +135,7 @@ class AuthRepo {
       );
 
       // Save to Firestore using static Provider call
-      await FirestoreProvider.addPatient(patientData);
+      await FirebaseProvider.addPatient(patientData);
 
       // Cache locally
       await PrefsHelper.saveUserData(
@@ -167,7 +167,7 @@ class AuthRepo {
   // Update Doctor Profile (The logic from instructor screenshots)
   Future<Either<Failure, Unit>> updateDoctorProfile(DoctorModel doctor) async {
     try {
-      await FirestoreProvider.updateDoctor(doctor);
+      await FirebaseProvider.updateDoctor(doctor);
       return right(unit);
     } catch (e) {
       return left(Failure(message: 'حدث خطأ أثناء تحديث البيانات.'));

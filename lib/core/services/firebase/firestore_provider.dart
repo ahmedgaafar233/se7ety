@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../features/auth/data/model/doctor_model.dart';
 import '../../../../features/auth/data/model/patient_model.dart';
 
-class FirestoreProvider {
+class FirebaseProvider {
   static final patientCollection = FirebaseFirestore.instance.collection("patient");
   static final doctorCollection = FirebaseFirestore.instance.collection("doctor");
 
@@ -14,17 +14,28 @@ class FirestoreProvider {
     await doctorCollection.doc(doctor.uid).set(doctor.toJson());
   }
 
-  static Future<List<DoctorModel>> getTopRatedDoctors() async {
-    final querySnapshot = await doctorCollection
-        .orderBy('rating', descending: true)
-        .limit(10)
-        .get();
-    return querySnapshot.docs
-        .map((doc) => DoctorModel.fromJson(doc.data()))
-        .toList();
-  }
-
   static Future<void> updateDoctor(DoctorModel doctor) async {
     await doctorCollection.doc(doctor.uid).update(doctor.toJson());
+  }
+
+  static Future<QuerySnapshot> getDoctors() async {
+    return await doctorCollection.get();
+  }
+
+  static Future<QuerySnapshot> sortingDoctors() async {
+    return await doctorCollection
+        .where("specialization", isNull: false)
+        .orderBy("rating", descending: true)
+        .get();
+  }
+
+  static Future<QuerySnapshot> getDoctorsBySpecialization(String specialization) async {
+    return await doctorCollection
+        .where("specialization", isEqualTo: specialization)
+        .get();
+  }
+
+  static Future<QuerySnapshot> searchForDoctorsByName(String name) async {
+    return await doctorCollection.get();
   }
 }
