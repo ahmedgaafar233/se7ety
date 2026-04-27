@@ -4,7 +4,6 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
-import 'package:se7ty/core/widgets/custom_text_form_field.dart';
 import 'package:se7ty/features/auth/data/model/doctor_model.dart';
 import 'package:intl/intl.dart';
 
@@ -18,282 +17,77 @@ class BookingScreen extends StatefulWidget {
 }
 
 class _BookingScreenState extends State<BookingScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _descController = TextEditingController();
-
-  DateTime? _selectedDate;
+  DateTime _selectedDate = DateTime.now();
   String? _selectedTime;
 
   final List<String> _timeSlots = [
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00',
-    '18:00',
-    '19:00',
+    '10:00 ص', '11:00 ص', '12:00 م',
+    '01:00 م', '02:00 م', '03:00 م',
+    '04:00 م', '05:00 م', '06:00 م',
+    '07:00 م', '08:00 م', '09:00 م',
   ];
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _descController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 30)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: Colors.white,
-              onSurface: AppColors.dark,
-            ),
-          ),
-          child: child!,
-        );
-      },
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.primary,
+        backgroundColor: Colors.white,
         elevation: 0,
-        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.primary),
+          onPressed: () => context.pop(),
+        ),
         title: Text(
-          'احجز مع دكتورك',
+          'حجز موعد',
           style: GoogleFonts.cairo(
-            color: Colors.white,
+            color: AppColors.primary,
             fontWeight: FontWeight.bold,
             fontSize: 18.sp,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-          onPressed: () => context.pop(),
-        ),
+        centerTitle: true,
       ),
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 20.h, bottom: 100.h),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  _buildDoctorBrief(),
-                  Gap(20.h),
-                  Center(
-                    child: Text(
-                      '-- ادخل بيانات الحجز --',
-                      style: GoogleFonts.cairo(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
-                  Gap(20.h),
-                  _buildLabel('اسم المريض'),
-                  Gap(8.h),
-                  CustomTextFormField(
-                    controller: _nameController,
-                    hintText: '',
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'يرجى إدخال اسم المريض';
-                      }
-                      return null;
-                    },
-                  ),
-                  Gap(16.h),
-                  _buildLabel('رقم الهاتف'),
-                  Gap(8.h),
-                  CustomTextFormField(
-                    controller: _phoneController,
-                    hintText: '',
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'يرجى إدخال رقم الهاتف';
-                      }
-                      return null;
-                    },
-                  ),
-                  Gap(16.h),
-                  _buildLabel('وصف الحالة'),
-                  Gap(8.h),
-                  CustomTextFormField(
-                    controller: _descController,
-                    hintText: '',
-                    maxLines: 4,
-                  ),
-                  Gap(24.h),
-                  _buildLabel('تاريخ الحجز'),
-                  Gap(8.h),
-                  InkWell(
-                    onTap: () => _selectDate(context),
-                    borderRadius: BorderRadius.circular(15.r),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(15.r),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Icon(Icons.calendar_month, color: AppColors.primary),
-                          Text(
-                            _selectedDate == null
-                                ? 'اختر تاريخ الحجز'
-                                : DateFormat('yyyy-MM-dd').format(_selectedDate!),
-                            style: GoogleFonts.cairo(
-                              fontSize: 14.sp,
-                              color: _selectedDate == null ? AppColors.grey : AppColors.dark,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Gap(24.h),
-                  _buildLabel('وقت الحجز'),
-                  Gap(12.h),
-                  Wrap(
-                    spacing: 12.w,
-                    runSpacing: 12.h,
-                    alignment: WrapAlignment.end,
-                    children: _timeSlots.map((time) {
-                      final isSelected = _selectedTime == time;
-                      return ChoiceChip(
-                        label: Text(
-                          time,
-                          style: GoogleFonts.cairo(
-                            color: isSelected ? Colors.white : AppColors.dark,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                          ),
-                        ),
-                        selected: isSelected,
-                        selectedColor: AppColors.primary,
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        onSelected: (selected) {
-                          setState(() {
-                            _selectedTime = selected ? time : null;
-                          });
-                        },
-                        showCheckmark: false,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.r),
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          
-          // Bottom Book Button
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50.h,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      if (_selectedDate == null || _selectedTime == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'يرجى اختيار التاريخ والوقت',
-                              style: GoogleFonts.cairo(),
-                              textAlign: TextAlign.center,
-                            ),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                        return;
-                      }
-                      // TODO: Implement actual booking logic
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'تم الحجز بنجاح',
-                            style: GoogleFonts.cairo(),
-                            textAlign: TextAlign.center,
-                          ),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                      context.pop();
-                      context.pop();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    'تأكيد الحجز',
-                    style: GoogleFonts.cairo(
-                      color: Colors.white,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
+            padding: EdgeInsets.only(bottom: 100.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _buildDoctorSummary(),
+                Gap(24.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      _buildSectionTitle('اختر التاريخ'),
+                      Gap(16.h),
+                      _buildDateSelector(),
+                      Gap(32.h),
+                      _buildSectionTitle('اختر الوقت'),
+                      Gap(16.h),
+                      _buildTimeGrid(),
+                    ],
                   ),
                 ),
-              ),
+              ],
             ),
           ),
+          _buildConfirmButton(context),
         ],
       ),
     );
   }
 
-  Widget _buildDoctorBrief() {
+  Widget _buildDoctorSummary() {
     return Container(
-      padding: EdgeInsets.all(12.r),
+      margin: EdgeInsets.symmetric(horizontal: 20.w),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         color: AppColors.primary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(15.r),
+        borderRadius: BorderRadius.circular(16.r),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -303,7 +97,7 @@ class _BookingScreenState extends State<BookingScreen> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  'د. ${widget.doctor.name ?? ''}',
+                  'د. ${widget.doctor.name}',
                   style: GoogleFonts.cairo(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
@@ -313,51 +107,233 @@ class _BookingScreenState extends State<BookingScreen> {
                 Text(
                   widget.doctor.specialization ?? '',
                   style: GoogleFonts.cairo(
-                    fontSize: 12.sp,
+                    fontSize: 13.sp,
                     color: AppColors.grey,
                   ),
-                ),
-                Gap(4.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      '${widget.doctor.rating ?? 0}',
-                      style: GoogleFonts.cairo(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Gap(4.w),
-                    const Icon(Icons.star, color: Colors.amber, size: 16),
-                  ],
                 ),
               ],
             ),
           ),
-          Gap(16.w),
+          Gap(12.w),
           CircleAvatar(
-            radius: 30.r,
-            backgroundColor: AppColors.primary.withOpacity(0.1),
+            radius: 25.r,
             backgroundImage: (widget.doctor.image != null && widget.doctor.image!.isNotEmpty)
                 ? NetworkImage(widget.doctor.image!)
-                : null,
-            child: (widget.doctor.image == null || widget.doctor.image!.isEmpty)
-                ? Icon(Icons.person, size: 30.sp, color: AppColors.primary)
-                : null,
+                : const AssetImage('assets/images/logo.png') as ImageProvider,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildLabel(String text) {
+  Widget _buildSectionTitle(String title) {
     return Text(
-      text,
+      title,
       style: GoogleFonts.cairo(
-        fontSize: 14.sp,
+        fontSize: 16.sp,
         fontWeight: FontWeight.bold,
         color: AppColors.dark,
+      ),
+    );
+  }
+
+  Widget _buildDateSelector() {
+    return SizedBox(
+      height: 90.h,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        reverse: true, // For RTL
+        itemCount: 14,
+        separatorBuilder: (_, __) => Gap(12.w),
+        itemBuilder: (context, index) {
+          final date = DateTime.now().add(Duration(days: index));
+          final isSelected = DateUtils.isSameDay(date, _selectedDate);
+          
+          return GestureDetector(
+            onTap: () => setState(() => _selectedDate = date),
+            child: Container(
+              width: 70.w,
+              decoration: BoxDecoration(
+                color: isSelected ? AppColors.primary : Colors.white,
+                borderRadius: BorderRadius.circular(16.r),
+                border: Border.all(
+                  color: isSelected ? AppColors.primary : AppColors.grey.withOpacity(0.1),
+                ),
+                boxShadow: isSelected ? [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  )
+                ] : null,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    DateFormat('E', 'ar').format(date),
+                    style: GoogleFonts.cairo(
+                      fontSize: 12.sp,
+                      color: isSelected ? Colors.white : AppColors.grey,
+                    ),
+                  ),
+                  Text(
+                    DateFormat('d').format(date),
+                    style: GoogleFonts.cairo(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
+                      color: isSelected ? Colors.white : AppColors.dark,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildTimeGrid() {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 12.w,
+        mainAxisSpacing: 12.h,
+        childAspectRatio: 2.2,
+      ),
+      itemCount: _timeSlots.length,
+      itemBuilder: (context, index) {
+        final time = _timeSlots[index];
+        final isSelected = _selectedTime == time;
+
+        return GestureDetector(
+          onTap: () => setState(() => _selectedTime = time),
+          child: Container(
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: isSelected ? AppColors.primary : Colors.white,
+              borderRadius: BorderRadius.circular(12.r),
+              border: Border.all(
+                color: isSelected ? AppColors.primary : AppColors.grey.withOpacity(0.1),
+              ),
+            ),
+            child: Text(
+              time,
+              style: GoogleFonts.cairo(
+                fontSize: 13.sp,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? Colors.white : AppColors.dark,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildConfirmButton(BuildContext context) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        padding: EdgeInsets.all(20.r),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 15,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 52.h,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+              elevation: 0,
+            ),
+            onPressed: () {
+              if (_selectedTime == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('يرجى اختيار الوقت', textAlign: TextAlign.center, style: GoogleFonts.cairo()),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+              // TODO: Logic for booking
+              _showSuccessDialog(context);
+            },
+            child: Text(
+              'تأكيد الحجز',
+              style: GoogleFonts.cairo(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.r)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Gap(10.h),
+            Icon(Icons.check_circle, color: AppColors.primary, size: 80.sp),
+            Gap(20.h),
+            Text(
+              'تم الحجز بنجاح!',
+              style: GoogleFonts.cairo(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+                color: AppColors.dark,
+              ),
+            ),
+            Gap(10.h),
+            Text(
+              'يمكنك مراجعة مواعيدك في صفحة المواعيد',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.cairo(
+                fontSize: 14.sp,
+                color: AppColors.grey,
+              ),
+            ),
+            Gap(30.h),
+            SizedBox(
+              width: double.infinity,
+              height: 45.h,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+                ),
+                onPressed: () {
+                  context.pop(); // close dialog
+                  context.pop(); // back to profile
+                  context.pop(); // back to home
+                },
+                child: Text('حسناً', style: GoogleFonts.cairo(color: Colors.white)),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -4,7 +4,7 @@ import 'package:se7ty/core/services/firebase/firestore_provider.dart';
 import 'package:se7ty/features/auth/data/model/doctor_model.dart';
 
 class HomeRepo {
-  static Future<Either<Failure, List<DoctorModel>>> getTopRatedDoctors() async {
+  Future<Either<Failure, List<DoctorModel>>> getTopRatedDoctors() async {
     try {
       final doctors = await FirestoreProvider.getTopRatedDoctors();
       return right(doctors);

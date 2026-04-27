@@ -23,4 +23,8 @@ class FirestoreProvider {
         .map((doc) => DoctorModel.fromJson(doc.data()))
         .toList();
   }
+
+  static Future<void> updateDoctor(DoctorModel doctor) async {
+    await doctorCollection.doc(doctor.uid).update(doctor.toJson());
+  }
 }

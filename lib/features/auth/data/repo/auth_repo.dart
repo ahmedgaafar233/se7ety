@@ -13,7 +13,7 @@ import '../model/user_type_enum.dart';
 
 class AuthRepo {
   // Login and cache info
-  static Future<Either<Failure, Unit>> login({
+  Future<Either<Failure, Unit>> login({
     required String email,
     required String password,
   }) async {
@@ -70,7 +70,7 @@ class AuthRepo {
   }
 
   // Register Doctor and cache info
-  static Future<Either<Failure, Unit>> registerDoctor(AuthParams params) async {
+  Future<Either<Failure, Unit>> registerDoctor(AuthParams params) async {
     try {
       final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: params.email,
@@ -115,7 +115,7 @@ class AuthRepo {
   }
 
   // Register Patient and cache info
-  static Future<Either<Failure, Unit>> registerPatient(AuthParams params) async {
+  Future<Either<Failure, Unit>> registerPatient(AuthParams params) async {
     try {
       final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: params.email,
@@ -159,18 +159,15 @@ class AuthRepo {
   }
 
   // Logout and clear cache
-  static Future<void> logout() async {
+  Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
     await PrefsHelper.logout();
   }
 
   // Update Doctor Profile (The logic from instructor screenshots)
-  static Future<Either<Failure, Unit>> updateDoctorProfile(DoctorModel doctor) async {
+  Future<Either<Failure, Unit>> updateDoctorProfile(DoctorModel doctor) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('doctor')
-          .doc(doctor.uid)
-          .update(doctor.toJson());
+      await FirestoreProvider.updateDoctor(doctor);
       return right(unit);
     } catch (e) {
       return left(Failure(message: 'حدث خطأ أثناء تحديث البيانات.'));
@@ -178,7 +175,7 @@ class AuthRepo {
   }
 
   // Upload Image to Firebase Storage
-  static Future<String> uploadImage(File file) async {
+  Future<String> uploadImage(File file) async {
     final ref = FirebaseStorage.instance
         .ref()
         .child('doctors')

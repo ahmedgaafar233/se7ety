@@ -16,7 +16,6 @@ import 'package:se7ty/features/auth/data/model/doctor_model.dart';
 import 'package:se7ty/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:se7ty/features/auth/presentation/cubit/auth_states.dart';
 
-
 class DoctorRegistrationScreen extends StatefulWidget {
   const DoctorRegistrationScreen({super.key});
 
@@ -72,222 +71,183 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
           backgroundColor: Colors.white,
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            title: Text(
-              'إكمال عملية التسجيل',
-              style: GoogleFonts.cairo(
-                color: AppColors.primary,
-                fontWeight: FontWeight.bold,
-              ),
+          elevation: 0,
+          title: Text(
+            'إكمال عملية التسجيل',
+            style: GoogleFonts.cairo(
+              color: AppColors.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 18.sp,
             ),
-            centerTitle: true,
           ),
-          body: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  Gap(20.h),
-                  GestureDetector(
-                    onTap: _pickImage,
-                    child: CircleAvatar(
-                      radius: 50.r,
-                      backgroundColor: const Color(0xFFE6EEF9),
-                      backgroundImage: _image != null ? FileImage(_image!) : null,
-                      child: _image == null
-                          ? Icon(Icons.camera_alt_outlined, size: 40.sp, color: AppColors.primary)
-                          : null,
-                    ),
-                  ),
-                  Gap(30.h),
-                  DropdownButtonFormField<String>(
-                    value: _specialization,
-                    decoration: InputDecoration(
-                      hintText: 'التخصص',
-                      hintStyle: GoogleFonts.cairo(color: AppColors.grey.withOpacity(0.5)),
-                      filled: true,
-                      fillColor: const Color(0xFFE6EEF9),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16.r),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    items: _specializations.map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (newValue) {
-                      setState(() {
-                        _specialization = newValue;
-                      });
-                    },
-                    validator: (value) => value == null ? 'يرجى اختيار التخصص' : null,
-                  ),
-                  Gap(20.h),
-                  TextFormField(
-                    controller: _bioController,
-                    maxLines: 3,
-                    textAlign: TextAlign.right,
-                    decoration: InputDecoration(
-                      hintText: 'نبذة تعريفية',
-                      hintStyle: GoogleFonts.cairo(color: AppColors.grey.withOpacity(0.5)),
-                      filled: true,
-                      fillColor: const Color(0xFFE6EEF9),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16.r),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    validator: (value) => value!.isEmpty ? 'يرجى كتابة نبذة تعريفية' : null,
-                  ),
-                  Gap(20.h),
-                  TextFormField(
-                    controller: _addressController,
-                    textAlign: TextAlign.right,
-                    decoration: InputDecoration(
-                      hintText: 'عنوان العيادة',
-                      hintStyle: GoogleFonts.cairo(color: AppColors.grey.withOpacity(0.5)),
-                      filled: true,
-                      fillColor: const Color(0xFFE6EEF9),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16.r),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    validator: (value) => value!.isEmpty ? 'يرجى إدخال عنوان العيادة' : null,
-                  ),
-                  Gap(20.h),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _closeHourController,
-                          textAlign: TextAlign.right,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: 'إلى',
-                            hintStyle: GoogleFonts.cairo(color: AppColors.grey.withOpacity(0.5)),
-                            prefixIcon: Icon(Icons.access_time, color: AppColors.primary),
-                            filled: true,
-                            fillColor: const Color(0xFFE6EEF9),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16.r),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          validator: (value) => value!.isEmpty ? 'مطلوب' : null,
-                        ),
-                      ),
-                      Gap(10.w),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _openHourController,
-                          textAlign: TextAlign.right,
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            hintText: 'من',
-                            hintStyle: GoogleFonts.cairo(color: AppColors.grey.withOpacity(0.5)),
-                            prefixIcon: Icon(Icons.access_time, color: AppColors.primary),
-                            filled: true,
-                            fillColor: const Color(0xFFE6EEF9),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16.r),
-                              borderSide: BorderSide.none,
-                            ),
-                          ),
-                          validator: (value) => value!.isEmpty ? 'مطلوب' : null,
-                        ),
-                      ),
-                      Gap(10.w),
-                      Text('ساعات العمل:', style: GoogleFonts.cairo()),
-                    ],
-                  ),
-                  Gap(20.h),
-                  TextFormField(
-                    controller: _phone1Controller,
-                    keyboardType: TextInputType.phone,
-                    textAlign: TextAlign.right,
-                    decoration: InputDecoration(
-                      hintText: 'رقم الهاتف 1',
-                      hintStyle: GoogleFonts.cairo(color: AppColors.grey.withOpacity(0.5)),
-                      filled: true,
-                      fillColor: const Color(0xFFE6EEF9),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16.r),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    validator: (value) => value!.isEmpty ? 'يرجى إدخال رقم الهاتف' : null,
-                  ),
-                  Gap(20.h),
-                  TextFormField(
-                    controller: _phone2Controller,
-                    keyboardType: TextInputType.phone,
-                    textAlign: TextAlign.right,
-                    decoration: InputDecoration(
-                      hintText: 'رقم الهاتف 2 (اختياري)',
-                      hintStyle: GoogleFonts.cairo(color: AppColors.grey.withOpacity(0.5)),
-                      filled: true,
-                      fillColor: const Color(0xFFE6EEF9),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16.r),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                  ),
-                  Gap(30.h),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 54.h,
-                    child: Builder(
-                      builder: (context) {
-                        return ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16.r),
-                            ),
-                          ),
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              final doctor = DoctorModel(
-                                uid: FirebaseAuth.instance.currentUser!.uid,
-                                bio: _bioController.text,
-                                specialization: _specialization,
-                                address: _addressController.text,
-                                openHour: _openHourController.text,
-                                closeHour: _closeHourController.text,
-                                phone1: _phone1Controller.text,
-                                phone2: _phone2Controller.text,
-                                rating: 3, // Initial rating
-                              );
-                              context.read<AuthCubit>().updateDoctor(doctor, image: _image);
-                            }
-                          },
-                          child: Text(
-                            'التسجيل',
-                            style: GoogleFonts.cairo(
-                              fontSize: 18.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        );
-                      }
-                    ),
-                  ),
-                  Gap(30.h),
-                ],
-              ),
+          centerTitle: true,
+        ),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                Gap(20.h),
+                _buildImagePicker(),
+                Gap(30.h),
+                _buildDropdown(),
+                Gap(20.h),
+                _buildTextField(_bioController, 'نبذة تعريفية', maxLines: 3),
+                Gap(20.h),
+                _buildTextField(_addressController, 'عنوان العيادة'),
+                Gap(20.h),
+                _buildWorkingHours(),
+                Gap(20.h),
+                _buildTextField(_phone1Controller, 'رقم الهاتف 1', keyboardType: TextInputType.phone),
+                Gap(20.h),
+                _buildTextField(_phone2Controller, 'رقم الهاتف 2 (اختياري)', keyboardType: TextInputType.phone, isRequired: false),
+                Gap(40.h),
+                _buildSubmitButton(),
+                Gap(30.h),
+              ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildImagePicker() {
+    return GestureDetector(
+      onTap: _pickImage,
+      child: Stack(
+        alignment: Alignment.bottomRight,
+        children: [
+          CircleAvatar(
+            radius: 60.r,
+            backgroundColor: const Color(0xFFF8FAFD),
+            backgroundImage: _image != null ? FileImage(_image!) : null,
+            child: _image == null
+                ? Icon(Icons.person_outline, size: 50.sp, color: AppColors.primary)
+                : null,
+          ),
+          Container(
+            padding: EdgeInsets.all(8.r),
+            decoration: const BoxDecoration(
+              color: AppColors.primary,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.camera_alt_outlined, size: 18.sp, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDropdown() {
+    return DropdownButtonFormField<String>(
+      value: _specialization,
+      alignment: Alignment.centerRight,
+      icon: Icon(Icons.keyboard_arrow_down, color: AppColors.primary),
+      decoration: _inputDecoration('التخصص'),
+      items: _specializations.map((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          alignment: Alignment.centerRight,
+          child: Text(value, style: GoogleFonts.cairo()),
+        );
+      }).toList(),
+      onChanged: (newValue) => setState(() => _specialization = newValue),
+      validator: (value) => value == null ? 'يرجى اختيار التخصص' : null,
+    );
+  }
+
+  Widget _buildTextField(TextEditingController controller, String hint, {int maxLines = 1, TextInputType keyboardType = TextInputType.text, bool isRequired = true}) {
+    return TextFormField(
+      controller: controller,
+      maxLines: maxLines,
+      textAlign: TextAlign.right,
+      keyboardType: keyboardType,
+      style: GoogleFonts.cairo(fontSize: 15.sp),
+      decoration: _inputDecoration(hint),
+      validator: (value) => (isRequired && (value == null || value.isEmpty)) ? 'هذا الحقل مطلوب' : null,
+    );
+  }
+
+  Widget _buildWorkingHours() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          'ساعات العمل:',
+          style: GoogleFonts.cairo(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppColors.dark),
+        ),
+        Gap(10.h),
+        Row(
+          children: [
+            Expanded(child: _buildTextField(_closeHourController, 'إلى (مثلاً 8)')),
+            Gap(15.w),
+            Expanded(child: _buildTextField(_openHourController, 'من (مثلاً 10)')),
+          ],
+        ),
+      ],
+    );
+  }
+
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: GoogleFonts.cairo(color: AppColors.grey.withOpacity(0.5), fontSize: 14.sp),
+      filled: true,
+      fillColor: const Color(0xFFF8FAFD),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.r),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.r),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.r),
+        borderSide: BorderSide(color: AppColors.primary, width: 1),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 52.h,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+          elevation: 0,
+        ),
+        onPressed: () {
+          if (_formKey.currentState!.validate()) {
+            final doctor = DoctorModel(
+              uid: FirebaseAuth.instance.currentUser!.uid,
+              name: PrefsHelper.getUserName(),
+              email: FirebaseAuth.instance.currentUser!.email,
+              bio: _bioController.text,
+              specialization: _specialization,
+              address: _addressController.text,
+              openHour: _openHourController.text,
+              closeHour: _closeHourController.text,
+              phone1: _phone1Controller.text,
+              phone2: _phone2Controller.text,
+              rating: 3,
+            );
+            context.read<AuthCubit>().updateDoctor(doctor, image: _image);
+          }
+        },
+        child: Text(
+          'إتمام التسجيل',
+          style: GoogleFonts.cairo(fontSize: 18.sp, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+      ),
     );
   }
 }

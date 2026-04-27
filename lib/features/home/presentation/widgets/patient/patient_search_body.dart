@@ -126,55 +126,70 @@ class _PatientSearchBodyState extends State<PatientSearchBody> {
         return Container(
           padding: EdgeInsets.all(12.r),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.r),
+            color: const Color(0xFFF8FAFD),
+            borderRadius: BorderRadius.circular(12.r),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 15,
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 10,
                 offset: const Offset(0, 5),
               ),
             ],
           ),
           child: Row(
             children: [
-              Container(
-                width: 80.w,
-                height: 80.h,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE6EEF9),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: const Icon(Icons.person, color: AppColors.primary, size: 35),
+              // Rating on the left
+              Column(
+                children: [
+                  Icon(Icons.star, color: Colors.amber, size: 16.sp),
+                  Text(
+                    '4', // Example rating
+                    style: GoogleFonts.cairo(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.dark,
+                    ),
+                  ),
+                ],
               ),
               Gap(15.w),
+              // Name and Specialization
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      'د. سارة أحمد',
-                      style: GoogleFonts.cairo(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                      'خالد علي عبدالله',
+                      style: GoogleFonts.cairo(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primary,
+                      ),
                     ),
                     Text(
-                      'أخصائية طب العيون',
-                      style: GoogleFonts.cairo(fontSize: 14.sp, color: AppColors.grey),
-                    ),
-                    Gap(5.h),
-                    Row(
-                      children: [
-                        const Icon(Icons.star, color: Colors.amber, size: 18),
-                        Gap(5.w),
-                        Text(
-                          '4.9 (120 تقييم)',
-                          style: GoogleFonts.cairo(fontSize: 12.sp, color: AppColors.grey),
-                        ),
-                      ],
+                      'دكتور قلب',
+                      style: GoogleFonts.cairo(
+                        fontSize: 14.sp,
+                        color: AppColors.dark,
+                      ),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, size: 16.sp, color: AppColors.primary),
+              Gap(15.w),
+              // Image on the right
+              Container(
+                width: 60.w,
+                height: 60.h,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6EEF9),
+                  borderRadius: BorderRadius.circular(10.r),
+                  image: const DecorationImage(
+                    image: AssetImage('assets/images/logo.png'), // Placeholder
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
             ],
           ),
         );

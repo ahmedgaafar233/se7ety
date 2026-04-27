@@ -5,13 +5,15 @@ import '../../data/model/auth_params.dart';
 import '../../data/model/user_type_enum.dart';
 import '../../data/repo/auth_repo.dart';
 import 'auth_states.dart';
+import '../../../../core/services/service_locator.dart';
 
 class AuthCubit extends Cubit<AuthState> {
+  final AuthRepo _authRepo = getIt<AuthRepo>();
   AuthCubit() : super(AuthInitialState());
 
   Future<void> login(UserTypeEnum userType, String email, String password) async {
     emit(AuthLoadingState());
-    final result = await AuthRepo.login(email: email, password: password);
+    final result = await _authRepo.login(email: email, password: password);
     result.fold(
       (failure) => emit(AuthErrorState(failure.message)),
       (success) => emit(AuthSuccessState(userType)),
@@ -22,8 +24,8 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoadingState());
     
     final result = userType == UserTypeEnum.doctor
-        ? await AuthRepo.registerDoctor(params)
-        : await AuthRepo.registerPatient(params);
+        ? await _authRepo.registerDoctor(params)
+        : await _authRepo.registerPatient(params);
 
     result.fold(
       (failure) => emit(AuthErrorState(failure.message)),
@@ -35,12 +37,12 @@ class AuthCubit extends Cubit<AuthState> {
     emit(AuthLoadingState());
     try {
       if (image != null) {
-        String? imageUrl = await AuthRepo.uploadImage(image);
+        String? imageUrl = await _authRepo.uploadImage(image);
         if (imageUrl != null) {
           doctor.image = imageUrl;
         }
       }
-      final result = await AuthRepo.updateDoctorProfile(doctor);
+      final result = await _authRepo.updateDoctorProfile(doctor);
       result.fold(
         (failure) => emit(AuthErrorState(failure.message)),
         (success) => emit(AuthSuccessState(UserTypeEnum.doctor)),

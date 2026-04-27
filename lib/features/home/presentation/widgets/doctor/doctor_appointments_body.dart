@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
 
 class DoctorAppointmentsBody extends StatelessWidget {
@@ -8,27 +9,43 @@ class DoctorAppointmentsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Gap(20.h),
-          Text(
-            'جدول المواعيد',
-            style: TextStyle(fontSize: 22.sp, fontWeight: FontWeight.bold, color: AppColors.dark),
+    return Column(
+      children: [
+        _buildHeader(),
+        Expanded(
+          child: ListView.separated(
+            padding: EdgeInsets.all(20.r),
+            itemCount: 6,
+            separatorBuilder: (_, __) => Gap(16.h),
+            itemBuilder: (context, index) {
+              return _buildAppointmentCard();
+            },
           ),
-          Gap(20.h),
-          Expanded(
-            child: ListView.separated(
-              itemCount: 6,
-              separatorBuilder: (_, __) => Gap(15.h),
-              itemBuilder: (context, index) {
-                return _buildAppointmentCard();
-              },
-            ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.fromLTRB(20.w, 40.h, 20.w, 24.h),
+      decoration: BoxDecoration(
+        color: AppColors.primary,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30.r),
+          bottomRight: Radius.circular(30.r),
+        ),
+      ),
+      child: Center(
+        child: Text(
+          'جدول المواعيد',
+          style: GoogleFonts.cairo(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-        ],
+        ),
       ),
     );
   }
@@ -42,48 +59,80 @@ class DoctorAppointmentsBody extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
         ],
+        border: Border.all(color: AppColors.grey.withOpacity(0.1)),
       ),
       child: Row(
         children: [
-          Container(
-            padding: EdgeInsets.all(12.r),
-            decoration: BoxDecoration(
-              color: AppColors.accent,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.person, color: AppColors.primary),
-          ),
-          Gap(15.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'أحمد السعيد',
-                  style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'منذ 15 دقيقة',
-                  style: TextStyle(fontSize: 12.sp, color: AppColors.grey),
-                ),
-              ],
-            ),
-          ),
           Column(
             children: [
               Text(
                 '10:30 ص',
-                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppColors.primary),
+                style: GoogleFonts.cairo(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
               ),
-              Text(
-                'كشف عادي',
-                style: TextStyle(fontSize: 12.sp, color: AppColors.grey),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Text(
+                  'كشف',
+                  style: GoogleFonts.cairo(
+                    fontSize: 12.sp,
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
+          ),
+          const Spacer(),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'أحمد السعيد محمد',
+                style: GoogleFonts.cairo(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.dark,
+                ),
+              ),
+              Row(
+                children: [
+                  Text(
+                    'منذ 15 دقيقة',
+                    style: GoogleFonts.cairo(
+                      fontSize: 12.sp,
+                      color: AppColors.grey,
+                    ),
+                  ),
+                  Gap(4.w),
+                  Icon(Icons.history, size: 14, color: AppColors.grey),
+                ],
+              ),
+            ],
+          ),
+          Gap(16.w),
+          Container(
+            width: 54.w,
+            height: 54.h,
+            decoration: BoxDecoration(
+              color: AppColors.accent.withOpacity(0.2),
+              shape: BoxShape.circle,
+              image: const DecorationImage(
+                image: AssetImage('assets/images/logo.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
         ],
       ),

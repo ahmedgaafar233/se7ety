@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:se7ty/core/routes/routes.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
 import 'package:se7ty/features/auth/data/model/doctor_model.dart';
+import 'package:se7ty/features/home/presentation/page/patient/booking_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class DoctorProfileScreen extends StatelessWidget {
   final DoctorModel doctor;
@@ -17,134 +17,67 @@ class DoctorProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.primary,
+        backgroundColor: Colors.white,
         elevation: 0,
-        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.primary),
+          onPressed: () => context.pop(),
+        ),
         title: Text(
           'بيانات الدكتور',
           style: GoogleFonts.cairo(
-            color: Colors.white,
+            color: AppColors.primary,
             fontWeight: FontWeight.bold,
             fontSize: 18.sp,
           ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-          onPressed: () => context.pop(),
-        ),
+        centerTitle: true,
       ),
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: EdgeInsets.only(left: 20.w, right: 20.w, top: 20.h, bottom: 100.h),
+            padding: EdgeInsets.only(left: 20.w, right: 20.w, bottom: 100.h),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                Gap(20.h),
                 _buildDoctorCard(),
                 Gap(24.h),
-                _buildSectionTitle('نبذه تعريفيه'),
+                _buildSectionTitle('نبذة تعريفية'),
                 Gap(12.h),
                 _buildInfoBox(
                   child: Text(
-                    doctor.bio ?? 'لا توجد نبذة تعريفية',
+                    doctor.bio ?? 'لا يوجد وصف متاح لهذا الطبيب حالياً.',
+                    textAlign: TextAlign.right,
                     style: GoogleFonts.cairo(
                       fontSize: 14.sp,
                       color: AppColors.dark,
                       height: 1.5,
                     ),
-                    textAlign: TextAlign.right,
-                  ),
-                ),
-                Gap(16.h),
-                _buildInfoBox(
-                  child: Column(
-                    children: [
-                      _buildInfoRow(
-                        icon: Icons.access_time_filled,
-                        text: '${doctor.openHour ?? ''} - ${doctor.closeHour ?? ''}',
-                      ),
-                      Gap(12.h),
-                      _buildInfoRow(
-                        icon: Icons.location_on,
-                        text: doctor.address ?? 'لم يضاف',
-                      ),
-                    ],
                   ),
                 ),
                 Gap(24.h),
-                _buildSectionTitle('معلومات الاتصال'),
+                _buildSectionTitle('معلومات التواصل'),
                 Gap(12.h),
                 _buildInfoBox(
                   child: Column(
                     children: [
-                      _buildInfoRow(
-                        icon: Icons.email,
-                        text: doctor.email ?? 'لم يضاف',
-                      ),
-                      if (doctor.phone1 != null && doctor.phone1!.isNotEmpty) ...[
-                        Gap(12.h),
-                        _buildInfoRow(
-                          icon: Icons.phone,
-                          text: doctor.phone1!,
-                        ),
-                      ],
+                      _buildInfoRow(Icons.location_on_outlined, 'العنوان', doctor.address ?? 'غير محدد'),
+                      Gap(12.h),
+                      _buildInfoRow(Icons.phone_outlined, 'رقم الهاتف', doctor.phone1 ?? 'غير محدد'),
                       if (doctor.phone2 != null && doctor.phone2!.isNotEmpty) ...[
                         Gap(12.h),
-                        _buildInfoRow(
-                          icon: Icons.phone,
-                          text: doctor.phone2!,
-                        ),
+                        _buildInfoRow(Icons.phone_outlined, 'رقم هاتف إضافي', doctor.phone2!),
                       ],
+                      Gap(12.h),
+                      _buildInfoRow(Icons.access_time, 'ساعات العمل', '${doctor.openHour} ص - ${doctor.closeHour} م'),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          
-          // Bottom Book Button
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: SizedBox(
-                width: double.infinity,
-                height: 50.h,
-                child: ElevatedButton(
-                  onPressed: () {
-                    context.push(Routes.booking, extra: doctor);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    'احجز موعد الان',
-                    style: GoogleFonts.cairo(
-                      color: Colors.white,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          _buildBottomBar(context),
         ],
       ),
     );
@@ -159,85 +92,89 @@ class DoctorProfileScreen extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
         ],
+        border: Border.all(color: AppColors.grey.withOpacity(0.1)),
       ),
-      child: Column(
+      child: Row(
         children: [
-          Row(
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'د. ${doctor.name ?? ''}',
-                      style: GoogleFonts.cairo(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primary,
-                      ),
+              Row(
+                children: [
+                  Text(
+                    '${doctor.rating}',
+                    style: GoogleFonts.cairo(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.dark,
                     ),
-                    Gap(4.h),
-                    Text(
-                      doctor.specialization ?? '',
-                      style: GoogleFonts.cairo(
-                        fontSize: 14.sp,
-                        color: AppColors.grey,
-                      ),
-                    ),
-                    Gap(8.h),
-                    Row(
-                      children: [
-                        const Icon(Icons.star, color: Colors.amber, size: 20),
-                        Gap(4.w),
-                        Text(
-                          '${doctor.rating ?? 0}',
-                          style: GoogleFonts.cairo(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Gap(16.h),
-                    Row(
-                      children: [
-                        _buildCallButton(Icons.phone),
-                        Gap(12.w),
-                        _buildCallButton(Icons.video_call),
-                      ],
-                    )
-                  ],
-                ),
+                  ),
+                  Gap(4.w),
+                  const Icon(Icons.star, color: Colors.amber, size: 18),
+                ],
               ),
-              CircleAvatar(
-                radius: 45.r,
-                backgroundColor: AppColors.primary.withOpacity(0.1),
-                backgroundImage: (doctor.image != null && doctor.image!.isNotEmpty)
-                    ? NetworkImage(doctor.image!)
-                    : null,
-                child: (doctor.image == null || doctor.image!.isEmpty)
-                    ? Icon(Icons.person, size: 50.sp, color: AppColors.primary)
-                    : null,
+              Gap(12.h),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Text(
+                  'كشف 100 ج.م',
+                  style: GoogleFonts.cairo(
+                    fontSize: 12.sp,
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ],
           ),
+          const Spacer(),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'د. ${doctor.name}',
+                style: GoogleFonts.cairo(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.dark,
+                ),
+              ),
+              Text(
+                doctor.specialization ?? '',
+                style: GoogleFonts.cairo(
+                  fontSize: 14.sp,
+                  color: AppColors.grey,
+                ),
+              ),
+            ],
+          ),
+          Gap(16.w),
+          Hero(
+            tag: doctor.uid ?? '',
+            child: Container(
+              width: 70.w,
+              height: 70.h,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16.r),
+                image: DecorationImage(
+                  image: (doctor.image != null && doctor.image!.isNotEmpty)
+                      ? NetworkImage(doctor.image!)
+                      : const AssetImage('assets/images/logo.png') as ImageProvider,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
-    );
-  }
-
-  Widget _buildCallButton(IconData icon) {
-    return Container(
-      padding: EdgeInsets.all(8.r),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: Icon(icon, color: AppColors.primary, size: 24.sp),
     );
   }
 
@@ -257,37 +194,104 @@ class DoctorProfileScreen extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.05),
+        color: const Color(0xFFF8FAFD),
         borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: AppColors.grey.withOpacity(0.05)),
       ),
       child: child,
     );
   }
 
-  Widget _buildInfoRow({required IconData icon, required String text}) {
+  Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Expanded(
-          child: Text(
-            text,
-            style: GoogleFonts.cairo(
-              fontSize: 14.sp,
-              color: AppColors.dark,
-            ),
-            textAlign: TextAlign.right,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                label,
+                style: GoogleFonts.cairo(
+                  fontSize: 12.sp,
+                  color: AppColors.grey,
+                ),
+              ),
+              Text(
+                value,
+                style: GoogleFonts.cairo(
+                  fontSize: 14.sp,
+                  color: AppColors.dark,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ),
         Gap(12.w),
         Container(
-          padding: EdgeInsets.all(6.r),
+          padding: EdgeInsets.all(8.r),
           decoration: BoxDecoration(
-            color: AppColors.primary,
+            color: Colors.white,
             shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 10,
+              ),
+            ],
           ),
-          child: Icon(icon, color: Colors.white, size: 16.sp),
+          child: Icon(icon, color: AppColors.primary, size: 20.sp),
         ),
       ],
+    );
+  }
+
+  Widget _buildBottomBar(BuildContext context) {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        padding: EdgeInsets.all(20.r),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 15,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 52.h,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+              elevation: 0,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => BookingScreen(doctor: doctor),
+                ),
+              );
+            },
+            child: Text(
+              'احجز موعد الآن',
+              style: GoogleFonts.cairo(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
