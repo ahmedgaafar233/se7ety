@@ -1,15 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:se7ty/core/routes/routes.dart';
+import 'package:se7ty/core/services/firebase/firestore_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
-import 'package:se7ty/core/utils/prefs_helper.dart';
 import 'package:se7ty/features/auth/data/model/doctor_model.dart';
-import 'package:se7ty/features/patient/home/presentation/manager/home_cubit.dart';
+import 'specialists_list.dart';
 
 class PatientHomeBody extends StatefulWidget {
   const PatientHomeBody({super.key});
@@ -19,291 +19,215 @@ class PatientHomeBody extends StatefulWidget {
 }
 
 class _PatientHomeBodyState extends State<PatientHomeBody> {
+  User? user = FirebaseAuth.instance.currentUser;
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('patient')
+          .doc(user!.uid)
+          .get();
+      if (doc.exists) {
+        setState(() {
+          userData = doc.data();
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => HomeCubit()..getTopRatedDoctors(),
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Gap(20.h),
-              _buildHeader(context),
-              Gap(20.h),
-              _buildWelcomeText(context),
-              Gap(20.h),
-              _buildSearchBar(),
-              Gap(25.h),
-              _buildBanner(),
-              Gap(25.h),
-              _buildSectionHeader('التخصصات'),
-              Gap(15.h),
-              _buildSpecializations(),
-              Gap(25.h),
-              _buildSectionHeader('الأعلى تقييماً'),
-              Gap(15.h),
-              _buildTopDoctors(),
-              Gap(20.h),
-            ],
-          ),
-        ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Gap(30.h),
+          _buildHeader(),
+          Gap(16.h),
+          _buildWelcomeText(),
+          Gap(24.h),
+          _buildSectionTitle('التخصصات'),
+          Gap(16.h),
+          const SpecialistsList(),
+          Gap(32.h),
+          _buildSectionTitle('الأعلى تقييماً'),
+          Gap(16.h),
+          const TopRatedDoctorList(),
+          Gap(20.h),
+        ],
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Icon(Icons.notifications_active_outlined, color: AppColors.dark, size: 24.sp),
+        Icon(Icons.notifications_none, color: AppColors.dark, size: 28.sp),
         Text(
-          'صحتي',
+          'صحّتي',
           style: GoogleFonts.cairo(
             fontSize: 22.sp,
             fontWeight: FontWeight.bold,
             color: AppColors.dark,
           ),
         ),
-        const SizedBox(width: 24), // Spacer for centering
+        Gap(28.sp), // To balance the left icon
       ],
     );
   }
 
-  Widget _buildWelcomeText(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            'مرحباً، ${PrefsHelper.getUserName() ?? 'سيد عبد العزيز'}',
-            style: GoogleFonts.cairo(
-              fontSize: 16.sp,
-              color: AppColors.primary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Gap(5.h),
-          Text(
-            'احجز الآن وكن جزءًا من رحلتك\nالصحية.',
-            textAlign: TextAlign.right,
-            style: GoogleFonts.cairo(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              color: AppColors.dark,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSearchBar() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFD),
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: TextField(
-        textAlign: TextAlign.right,
-        decoration: InputDecoration(
-          hintText: 'ابحث عن دكتور',
-          hintStyle: GoogleFonts.cairo(fontSize: 14.sp, color: AppColors.grey),
-          border: InputBorder.none,
-          prefixIcon: Container(
-            margin: EdgeInsets.all(8.r),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(8.r),
-            ),
-            child: const Icon(Icons.search, color: Colors.white, size: 20),
+  Widget _buildWelcomeText() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(
+          'مرحباً، ${userData?['name'] ?? '...'}',
+          style: GoogleFonts.cairo(
+            fontSize: 16.sp,
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildBanner() {
-    return const SizedBox.shrink();
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Text(
-        title,
-        style: GoogleFonts.cairo(
-          fontSize: 16.sp,
-          fontWeight: FontWeight.bold,
-          color: AppColors.primary,
+        Gap(8.h),
+        Text(
+          'احجز الآن وكن جزءًا من رحلتك الصحية.',
+          style: GoogleFonts.cairo(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.bold,
+            color: AppColors.dark,
+            height: 1.4,
+          ),
+          textAlign: TextAlign.right,
         ),
-      ),
+      ],
     );
   }
 
-  Widget _buildSpecializations() {
-    final List<Map<String, dynamic>> specs = [
-      {'name': 'دكتور قلب', 'color': const Color(0xFF4DB6AC)},
-      {'name': 'جراحة عامة', 'color': const Color(0xFF42A5F5)},
-      {'name': 'أطفال', 'color': const Color(0xFFFF8A65)},
-      {'name': 'عيون', 'color': const Color(0xFF9575CD)},
-    ];
 
-    return SizedBox(
-      height: 170.h,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: specs.length,
-        separatorBuilder: (_, __) => Gap(15.w),
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              context.push(
-                Routes.specializationDoctors,
-                extra: {
-                  'specialization': specs[index]['name'],
-                  'doctors': [],
-                },
-              );
-            },
-            child: Container(
-              width: 130.w,
-              decoration: BoxDecoration(
-                color: specs[index]['color'],
-                borderRadius: BorderRadius.circular(20.r),
-              ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    left: 10,
-                    bottom: 40,
-                    child: Image.asset(
-                      'assets/images/logo.png', // Fallback if no specific illustration
-                      opacity: const AlwaysStoppedAnimation(0.5),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: 15.h),
-                      child: Text(
-                        specs[index]['name'],
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.cairo(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+
+  Widget _buildSectionTitle(String title) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'عرض الكل',
+          style: GoogleFonts.cairo(
+            fontSize: 14.sp,
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        Text(
+          title,
+          style: GoogleFonts.cairo(
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+            color: AppColors.dark,
+          ),
+        ),
+      ],
     );
   }
+}
 
-  Widget _buildTopDoctors() {
-    return BlocBuilder<HomeCubit, HomeState>(
-      builder: (context, state) {
-        if (state is HomeLoading) {
+class TopRatedDoctorList extends StatelessWidget {
+  const TopRatedDoctorList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<QuerySnapshot>(
+      future: FirebaseProvider.sortingDoctors(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state is HomeError) {
-          return Center(child: Text(state.error));
-        } else if (state is HomeSuccess) {
-          if (state.doctors.isEmpty) {
-            return Center(child: Text('لا يوجد أطباء متاحون حالياً', style: GoogleFonts.cairo()));
-          }
-          return ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: state.doctors.length,
-            separatorBuilder: (_, __) => Gap(15.h),
-            itemBuilder: (context, index) {
-              final doctor = state.doctors[index];
-              return Container(
-                padding: EdgeInsets.all(12.r),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12.r),
-                      child: doctor.image != null
-                          ? CachedNetworkImage(
-                              imageUrl: doctor.image!,
-                              width: 80.w,
-                              height: 80.h,
-                              fit: BoxFit.cover,
-                              placeholder: (context, url) => Container(color: Colors.grey[200]),
-                              errorWidget: (context, url, error) => const Icon(Icons.person),
-                            )
-                          : Container(
-                              width: 80.w,
-                              height: 80.h,
-                              color: const Color(0xFFE6EEF9),
-                              child: const Icon(Icons.person, color: AppColors.primary),
-                            ),
-                    ),
-                    Gap(15.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            doctor.name ?? 'طبيب غير مسمى',
-                            style: GoogleFonts.cairo(fontSize: 16.sp, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            doctor.specialization ?? 'تخصص عام',
-                            style: GoogleFonts.cairo(fontSize: 14.sp, color: AppColors.grey),
-                          ),
-                          Gap(5.h),
-                          Row(
-                            children: [
-                              Icon(Icons.star, color: Colors.amber, size: 18.sp),
-                              Gap(5.w),
-                              Text(
-                                doctor.rating?.toString() ?? '0.0',
-                                style: GoogleFonts.cairo(fontSize: 14.sp, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
         }
-        return const SizedBox();
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('لا يوجد أطباء متاحون'));
+        }
+
+        var doctors = snapshot.data!.docs
+            .map((doc) => DoctorModel.fromJson(doc.data() as Map<String, dynamic>))
+            .toList();
+
+        return ListView.separated(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: doctors.length > 5 ? 5 : doctors.length,
+          separatorBuilder: (context, index) => Gap(16.h),
+          itemBuilder: (context, index) {
+            return _buildDoctorCard(context, doctors[index]);
+          },
+        );
       },
+    );
+  }
+
+  Widget _buildDoctorCard(BuildContext context, DoctorModel doctor) {
+    return InkWell(
+      onTap: () {
+        context.push(Routes.doctorProfile, extra: doctor);
+      },
+      child: Container(
+        padding: EdgeInsets.all(12.r),
+        decoration: BoxDecoration(
+          color: AppColors.lightBlue,
+          borderRadius: BorderRadius.circular(20.r),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.arrow_back_ios_new, size: 16, color: AppColors.primary),
+            const Spacer(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  'د. ${doctor.name}',
+                  style: GoogleFonts.cairo(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.dark,
+                  ),
+                ),
+                Text(
+                  doctor.specialization ?? '',
+                  style: GoogleFonts.cairo(
+                    fontSize: 14.sp,
+                    color: AppColors.primary,
+                  ),
+                ),
+                Row(
+                  children: [
+                    Text(
+                      '${doctor.rating}',
+                      style: GoogleFonts.cairo(fontSize: 12.sp, color: Colors.grey),
+                    ),
+                    const Icon(Icons.star, color: Colors.amber, size: 16),
+                  ],
+                ),
+              ],
+            ),
+            Gap(16.w),
+            CircleAvatar(
+              radius: 35.r,
+              backgroundColor: AppColors.primary.withOpacity(0.1),
+              backgroundImage: doctor.image != null ? NetworkImage(doctor.image!) : null,
+              child: doctor.image == null
+                  ? Icon(Icons.person, size: 35.sp, color: AppColors.primary)
+                  : null,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

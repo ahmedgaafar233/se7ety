@@ -1,11 +1,29 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
+import 'package:se7ty/features/appointments/data/model/appointment_model.dart';
+import 'package:se7ty/features/appointments/presentation/cubit/appointments_cubit.dart';
+import 'package:se7ty/features/appointments/presentation/cubit/appointments_states.dart';
 
-class DoctorAppointmentsBody extends StatelessWidget {
+class DoctorAppointmentsBody extends StatefulWidget {
   const DoctorAppointmentsBody({super.key});
+
+  @override
+  State<DoctorAppointmentsBody> createState() => _DoctorAppointmentsBodyState();
+}
+
+class _DoctorAppointmentsBodyState extends State<DoctorAppointmentsBody> {
+  final User? user = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<AppointmentsCubit>().getDoctorAppointments(user?.uid ?? '');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,12 +31,40 @@ class DoctorAppointmentsBody extends StatelessWidget {
       children: [
         _buildHeader(),
         Expanded(
-          child: ListView.separated(
-            padding: EdgeInsets.all(20.r),
-            itemCount: 6,
-            separatorBuilder: (_, __) => Gap(16.h),
-            itemBuilder: (context, index) {
-              return _buildAppointmentCard();
+          child: BlocBuilder<AppointmentsCubit, AppointmentsStates>(
+            builder: (context, state) {
+              if (state is AppointmentsLoadingState) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is AppointmentsSuccessState) {
+                if (state.appointments.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.calendar_today, size: 80.sp, color: Colors.grey),
+                        Gap(20.h),
+                        Text(
+                          'لا يوجد مواعيد محجوزة',
+                          style: GoogleFonts.cairo(fontSize: 16.sp, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return ListView.separated(
+                  itemCount: state.appointments.length,
+                  padding: EdgeInsets.all(20.r),
+                  separatorBuilder: (_, __) => Gap(16.h),
+                  itemBuilder: (context, index) {
+                    var appointment = AppointmentModel.fromJson(
+                        state.appointments[index].data() as Map<String, dynamic>);
+                    return _buildAppointmentCard(appointment);
+                  },
+                );
+              } else if (state is AppointmentsErrorState) {
+                return Center(child: Text(state.error));
+              }
+              return const SizedBox();
             },
           ),
         ),
@@ -50,7 +96,7 @@ class DoctorAppointmentsBody extends StatelessWidget {
     );
   }
 
-  Widget _buildAppointmentCard() {
+  Widget _buildAppointmentCard(AppointmentModel appointment) {
     return Container(
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
@@ -70,7 +116,7 @@ class DoctorAppointmentsBody extends StatelessWidget {
           Column(
             children: [
               Text(
-                '10:30 ص',
+                appointment.time ?? '',
                 style: GoogleFonts.cairo(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
@@ -84,9 +130,9 @@ class DoctorAppointmentsBody extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Text(
-                  'كشف',
+                  appointment.date ?? '',
                   style: GoogleFonts.cairo(
-                    fontSize: 12.sp,
+                    fontSize: 10.sp,
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
                   ),
@@ -99,7 +145,7 @@ class DoctorAppointmentsBody extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                'أحمد السعيد محمد',
+                appointment.patientName ?? '',
                 style: GoogleFonts.cairo(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
@@ -109,7 +155,7 @@ class DoctorAppointmentsBody extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'منذ 15 دقيقة',
+                    'كشف',
                     style: GoogleFonts.cairo(
                       fontSize: 12.sp,
                       color: AppColors.grey,
@@ -128,11 +174,8 @@ class DoctorAppointmentsBody extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.accent.withOpacity(0.2),
               shape: BoxShape.circle,
-              image: const DecorationImage(
-                image: AssetImage('assets/images/logo.png'),
-                fit: BoxFit.cover,
-              ),
             ),
+            child: Icon(Icons.person, color: AppColors.primary),
           ),
         ],
       ),

@@ -96,7 +96,7 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
                 Gap(30.h),
                 _buildDropdown(),
                 Gap(20.h),
-                _buildTextField(_bioController, 'نبذة تعريفية', maxLines: 3),
+                _buildTextField(_bioController, 'سجل المعلومات الطبية العامة مثل تعليمك الأكاديمي\nوخبراتك السابقة...', maxLines: 5),
                 Gap(20.h),
                 _buildTextField(_addressController, 'عنوان العيادة'),
                 Gap(20.h),
@@ -173,21 +173,78 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
     );
   }
 
-  Widget _buildWorkingHours() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Text(
-          'ساعات العمل:',
-          style: GoogleFonts.cairo(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppColors.dark),
+  Future<void> _selectTime(TextEditingController controller) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        controller.text = picked.format(context);
+      });
+    }
+  }
+
+  Widget _buildTimePickerField(TextEditingController controller, String hint) {
+    return TextFormField(
+      controller: controller,
+      readOnly: true,
+      onTap: () => _selectTime(controller),
+      textAlign: TextAlign.center,
+      style: GoogleFonts.cairo(fontSize: 15.sp),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: GoogleFonts.cairo(color: AppColors.grey.withOpacity(0.5), fontSize: 14.sp),
+        filled: true,
+        fillColor: const Color(0xFFF8FAFD),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+        prefixIcon: Icon(Icons.access_time, color: AppColors.primary, size: 20.sp),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide.none,
         ),
-        Gap(10.h),
-        Row(
-          children: [
-            Expanded(child: _buildTextField(_closeHourController, 'إلى (مثلاً 8)')),
-            Gap(15.w),
-            Expanded(child: _buildTextField(_openHourController, 'من (مثلاً 10)')),
-          ],
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: BorderSide(color: AppColors.primary, width: 1),
+        ),
+      ),
+      validator: (value) => (value == null || value.isEmpty) ? 'مطلوب' : null,
+    );
+  }
+
+  Widget _buildWorkingHours() {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'الى',
+                style: GoogleFonts.cairo(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppColors.dark),
+              ),
+              Gap(10.h),
+              _buildTimePickerField(_closeHourController, 'PM 10:00'),
+            ],
+          ),
+        ),
+        Gap(15.w),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                'ساعات العمل من',
+                style: GoogleFonts.cairo(fontSize: 14.sp, fontWeight: FontWeight.bold, color: AppColors.dark),
+              ),
+              Gap(10.h),
+              _buildTimePickerField(_openHourController, 'AM 10:00'),
+            ],
+          ),
         ),
       ],
     );
@@ -244,7 +301,7 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
           }
         },
         child: Text(
-          'إتمام التسجيل',
+          'التسجيل',
           style: GoogleFonts.cairo(fontSize: 18.sp, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),

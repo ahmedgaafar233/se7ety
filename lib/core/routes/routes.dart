@@ -10,4 +10,7 @@ class Routes {
   static const String doctorProfile = '/doctorProfile';
   static const String booking = '/booking';
   static const String specializationDoctors = '/specializationDoctors';
+  static const String patientDetails = '/patientDetails';
+  static const String doctorDetails = '/doctorDetails';
+  static const String settings = '/settings';
 }

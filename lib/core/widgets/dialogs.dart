@@ -28,3 +28,32 @@ showMyDialog(BuildContext context, String error) {
     ),
   );
 }
+
+showConfirmationDialog(
+  BuildContext context, {
+  required String title,
+  required String content,
+  required String okText,
+  required VoidCallback onOk,
+}) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(title),
+      content: Text(content),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('إلغاء'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            onOk();
+          },
+          child: Text(okText),
+        ),
+      ],
+    ),
+  );
+}

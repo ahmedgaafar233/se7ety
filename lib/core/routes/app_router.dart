@@ -15,6 +15,9 @@ import 'package:se7ty/features/patient/search/doctor_profile/page/doctor_profile
 import 'package:se7ty/features/patient/home/presentation/page/booking_screen.dart';
 import 'package:se7ty/features/patient/search/specialization_search/page/specialization_doctors_screen.dart';
 import 'package:se7ty/features/auth/data/model/doctor_model.dart';
+import 'package:se7ty/features/patient/profile/presentation/page/patient_details_screen.dart';
+import 'package:se7ty/features/doctor/profile/presentation/page/doctor_details_screen.dart';
+import 'package:se7ty/features/patient/settings/page/settings_screen.dart';
 
 class AppRouter {
   static final router = GoRouter(
@@ -78,6 +81,18 @@ class AppRouter {
             doctors: extra['doctors'] as List<DoctorModel>,
           );
         },
+      ),
+      GoRoute(
+        path: Routes.patientDetails,
+        builder: (context, state) => const PatientDetailsScreen(),
+      ),
+      GoRoute(
+        path: Routes.doctorDetails,
+        builder: (context, state) => const DoctorDetailsScreen(),
+      ),
+      GoRoute(
+        path: Routes.settings,
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );

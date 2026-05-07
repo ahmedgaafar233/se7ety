@@ -19,13 +19,11 @@ class DoctorProfileScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         elevation: 0,
-        leading: const Gap(0),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 20),
-            onPressed: () => context.pop(),
-          ),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => context.pop(),
+        ),
+        actions: const [],
         title: Text(
           'بيانات الدكتور',
           style: GoogleFonts.cairo(
@@ -161,8 +159,8 @@ class DoctorProfileScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
       decoration: BoxDecoration(
-        color: const Color(0xFFE6F2F2),
-        borderRadius: BorderRadius.circular(10.r),
+        color: AppColors.lightBlue,
+        borderRadius: BorderRadius.circular(15.r),
       ),
       child: Row(
         children: [
@@ -190,8 +188,8 @@ class DoctorProfileScreen extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
-        color: const Color(0xFFE6F2F2).withOpacity(0.5),
-        borderRadius: BorderRadius.circular(12.r),
+        color: AppColors.lightBlue,
+        borderRadius: BorderRadius.circular(20.r),
       ),
       child: child,
     );

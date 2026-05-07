@@ -8,6 +8,12 @@ class AppColors {
   static const Color dark = Color(0xFF212121);
   static const Color grey = Color(0xFF757575);
   static const Color lightGrey = Color(0xFFF5F5F5);
-  static const Color searchBackground = Color(0xFFF2F4F7); // From Figma
+  static const Color searchBackground = Color(0xFFF2F4F7);
   static const Color error = Color(0xFFE53935);
+
+  // Figma Specialization Colors
+  static const Color tealCard = Color(0xFF0B8FAC);
+  static const Color blueCard = Color(0xFF639FD7);
+  static const Color orangeCard = Color(0xFFE9816D);
+  static const Color lightBlue = Color(0xFFE6EEF9);
 }

@@ -1,207 +1,167 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:se7ty/core/routes/routes.dart';
 import 'package:se7ty/core/theme/app_colors.dart';
-import 'package:se7ty/core/utils/prefs_helper.dart';
+import 'package:se7ty/core/widgets/dialogs.dart';
 
-class DoctorProfileBody extends StatelessWidget {
+class DoctorProfileBody extends StatefulWidget {
   const DoctorProfileBody({super.key});
 
   @override
+  State<DoctorProfileBody> createState() => _DoctorProfileBodyState();
+}
+
+class _DoctorProfileBodyState extends State<DoctorProfileBody> {
+  User? user = FirebaseAuth.instance.currentUser;
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    if (user != null) {
+      final doc = await FirebaseFirestore.instance
+          .collection('doctor')
+          .doc(user!.uid)
+          .get();
+      if (doc.exists) {
+        setState(() {
+          userData = doc.data();
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          _buildProfileHeader(),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Gap(24.h),
-                _buildSectionTitle('نبذة تعريفية'),
-                Gap(12.h),
-                _buildInfoBox(
-                  child: Text(
-                    'أخصائي طب وجراحة العيون، خبرة أكثر من 10 سنوات في عمليات تصحيح النظر والمياه البيضاء والزرقاء.',
-                    textAlign: TextAlign.right,
-                    style: GoogleFonts.cairo(
-                      fontSize: 14.sp,
-                      color: AppColors.dark,
-                      height: 1.5,
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: AppColors.primary,
+        elevation: 0,
+        centerTitle: true,
+        title: Text(
+          'الملف الشخصي',
+          style: GoogleFonts.cairo(
+            color: Colors.white,
+            fontSize: 18.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(25.r),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Gap(30.h),
+            Center(
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 60.r,
+                    backgroundColor: AppColors.grey.withOpacity(0.1),
+                    backgroundImage: (userData != null && userData!['image'] != null)
+                        ? NetworkImage(userData!['image'])
+                        : null,
+                    child: (userData == null || userData!['image'] == null)
+                        ? Icon(Icons.person, size: 60.sp, color: AppColors.primary)
+                        : null,
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: CircleAvatar(
+                      radius: 18.r,
+                      backgroundColor: AppColors.primary,
+                      child: Icon(Icons.camera_alt, color: Colors.white, size: 18.sp),
                     ),
                   ),
-                ),
-                Gap(24.h),
-                _buildSectionTitle('معلومات العيادة'),
-                Gap(12.h),
-                _buildInfoBox(
-                  child: Column(
-                    children: [
-                      _buildInfoRow('العنوان', 'القاهرة، شارع التحرير'),
-                      Gap(12.h),
-                      _buildInfoRow('رقم العيادة', '01012345678'),
-                      Gap(12.h),
-                      _buildInfoRow('ساعات العمل', '10:00 ص - 08:00 م'),
-                    ],
-                  ),
-                ),
-                Gap(24.h),
-                _buildSectionTitle('الإعدادات'),
-                Gap(12.h),
-                _buildSettingsList(context),
-                Gap(40.h),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProfileHeader() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.fromLTRB(20.w, 40.h, 20.w, 32.h),
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30.r),
-          bottomRight: Radius.circular(30.r),
-        ),
-      ),
-      child: Column(
-        children: [
-          Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              CircleAvatar(
-                radius: 50.r,
-                backgroundColor: Colors.white,
-                child: CircleAvatar(
-                  radius: 47.r,
-                  backgroundColor: AppColors.accent,
-                  child: Icon(Icons.person, size: 50.sp, color: AppColors.primary),
-                ),
+                ],
               ),
-              Container(
-                padding: EdgeInsets.all(6.r),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.edit, size: 16.sp, color: AppColors.primary),
+            ),
+            Gap(16.h),
+            Text(
+              userData?['name'] ?? 'جاري التحميل...',
+              style: GoogleFonts.cairo(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
               ),
-            ],
-          ),
-          Gap(16.h),
-          Text(
-            'د. ${PrefsHelper.getUserName() ?? 'طبيبنا'}',
-            style: GoogleFonts.cairo(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
             ),
-          ),
-          Text(
-            'أخصائي طب وجراحة العيون',
-            style: GoogleFonts.cairo(
-              fontSize: 14.sp,
-              color: Colors.white.withOpacity(0.8),
+            Text(
+              userData?['specialization'] ?? '',
+              style: GoogleFonts.cairo(
+                fontSize: 14.sp,
+                color: Colors.grey,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: GoogleFonts.cairo(
-        fontSize: 16.sp,
-        fontWeight: FontWeight.bold,
-        color: AppColors.dark,
-      ),
-    );
-  }
-
-  Widget _buildInfoBox({required Widget child}) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(16.r),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(16.r),
-      ),
-      child: child,
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          value,
-          style: GoogleFonts.cairo(
-            fontSize: 14.sp,
-            color: AppColors.dark,
-            fontWeight: FontWeight.w600,
-          ),
+            Gap(32.h),
+            _buildProfileItem(Icons.person_outline, 'تعديل البيانات', () {
+               context.push(Routes.doctorDetails);
+            }),
+            _buildProfileItem(Icons.lock_outline, 'تغيير كلمة المرور', () {}),
+            _buildProfileItem(Icons.language, 'اللغة', () {}),
+            _buildProfileItem(Icons.help_outline, 'مركز المساعدة', () {}),
+            _buildProfileItem(Icons.logout, 'تسجيل الخروج', () {
+              showConfirmationDialog(
+                context,
+                title: 'تسجيل الخروج',
+                content: 'هل أنت متأكد من رغبتك في تسجيل الخروج؟',
+                okText: 'خروج',
+                onOk: () {
+                  FirebaseAuth.instance.signOut();
+                  context.pushReplacement(Routes.welcome);
+                },
+              );
+            }, isLogout: true),
+          ],
         ),
-        Text(
-          label,
-          style: GoogleFonts.cairo(
-            fontSize: 14.sp,
-            color: AppColors.grey,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSettingsList(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.grey.withOpacity(0.1)),
-      ),
-      child: Column(
-        children: [
-          _buildSettingsTile(Icons.person_outline, 'تعديل البيانات الشخصية', () {}),
-          const Divider(height: 1),
-          _buildSettingsTile(Icons.history, 'سجل المواعيد', () {}),
-          const Divider(height: 1),
-          _buildSettingsTile(Icons.notifications_none, 'الإشعارات', () {}),
-          const Divider(height: 1),
-          _buildSettingsTile(Icons.logout, 'تسجيل الخروج', () {
-            PrefsHelper.logout();
-            context.go(Routes.welcome);
-          }, isDestructive: true),
-        ],
       ),
     );
   }
 
-  Widget _buildSettingsTile(IconData icon, String title, VoidCallback onTap, {bool isDestructive = false}) {
+  Widget _buildProfileItem(IconData icon, String title, VoidCallback onTap,
+      {bool isLogout = false}) {
     return ListTile(
       onTap: onTap,
-      leading: Icon(Icons.arrow_back_ios_new, size: 14, color: AppColors.grey),
+      leading: Icon(
+        Icons.arrow_back_ios_new,
+        size: 16.sp,
+        color: isLogout ? Colors.red : Colors.grey,
+      ),
       title: Text(
         title,
         textAlign: TextAlign.right,
         style: GoogleFonts.cairo(
-          fontSize: 15.sp,
-          color: isDestructive ? Colors.red : AppColors.dark,
-          fontWeight: FontWeight.w600,
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w500,
+          color: isLogout ? Colors.red : AppColors.dark,
         ),
       ),
-      trailing: Icon(icon, color: isDestructive ? Colors.red : AppColors.primary, size: 22.sp),
+      trailing: Container(
+        padding: EdgeInsets.all(8.r),
+        decoration: BoxDecoration(
+          color: isLogout ? Colors.red.withOpacity(0.1) : AppColors.primary.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(10.r),
+        ),
+        child: Icon(
+          icon,
+          color: isLogout ? Colors.red : AppColors.primary,
+          size: 20.sp,
+        ),
+      ),
     );
   }
 }
