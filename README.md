@@ -1,28 +1,36 @@
 <div align="center">
   <img src="assets/images/logo.png" alt="Se7ty Logo" width="150"/>
   <h1>Se7ty (صحّتي)</h1>
-  <p>تطبيق طبي متكامل لحجز مواعيد الأطباء وإدارة الملفات الشخصية للمرضى والأطباء.</p>
+  <p>A comprehensive healthcare application for booking doctor appointments and managing profiles for both patients and doctors.</p>
 </div>
 
 ---
 
-## 🌟 مميزات التطبيق
+## 🌟 Features
 
-### 👨‍⚕️ للأطباء (Doctors)
-- إنشاء حساب وتوثيق الحساب الشخصي.
-- إضافة التخصص، مواعيد العمل، وسائل الاتصال، وتفاصيل العيادة.
-- استعراض المواعيد المحجوزة من قبل المرضى.
-- إدارة الملف الشخصي.
+### 👨‍⚕️ For Doctors
+- Create an account and verify credentials.
+- Add specialization, working hours, contact info, and clinic details.
+- View and manage patient appointments.
+- Manage personal profile and ratings.
 
-### 🤒 للمرضى (Patients)
-- تسجيل حساب جديد وتحديث البيانات الشخصية.
-- تصفح الأطباء حسب التخصص (أسنان، عيون، قلب، إلخ).
-- عرض الأطباء الأعلى تقييماً.
-- صفحة تفصيلية لكل دكتور تحتوي على التقييم، مواعيد العمل، والموقع.
-- نظام حجز ديناميكي ذكي يولد أوقات الحجز بناءً على مواعيد عمل الطبيب المتاحة.
-- عرض وإدارة المواعيد المحجوزة.
+### 🤒 For Patients
+- Register a new account and manage personal information.
+- Browse doctors by specialization (Dentistry, Ophthalmology, Cardiology, etc.).
+- View top-rated doctors.
+- Detailed doctor profiles including ratings, working hours, and location.
+- **Smart Dynamic Booking System:** Automatically generates available time slots based on the doctor's specific working hours.
+- View and manage booked appointments.
 
-## 📸 لقطات الشاشة (Screenshots)
+## 🎥 App Demo
+
+> **Note for Developer:** Record a quick video or GIF of the app in action and replace `assets/demo.gif` with your actual file.
+
+<div align="center">
+  <img src="assets/demo.gif" alt="App Demo" width="300"/>
+</div>
+
+## 📸 Screenshots
 
 <p align="center">
   <img src="assets/screen_shots/01.jpeg" width="200" alt="Screen 1"/>
@@ -44,47 +52,50 @@
   <img src="assets/screen_shots/11.jpeg" width="200" alt="Screen 11"/>
 </p>
 
-## 🛠️ التقنيات المستخدمة (Tech Stack)
+## 🛠️ Tech Stack & Architecture
 
-- **إطار العمل:** Flutter 💙
-- **لغة البرمجة:** Dart
-- **إدارة الحالة (State Management):** BLoC (Cubit)
-- **قاعدة البيانات:** Firebase Cloud Firestore
-- **المصادقة:** Firebase Authentication
-- **التوجيه (Routing):** GoRouter
-- **الواجهة:** تصميم متجاوب باستخدام `flutter_screenutil`
-- **التصميم المعماري:** Clean Architecture بمبدأ الـ Repository Pattern.
+- **Framework:** Flutter 💙
+- **Language:** Dart
+- **Architecture:** Clean Architecture (Feature-based structure separating Data and Presentation layers)
+- **State Management:** BLoC (Cubit)
+- **Database:** Firebase Cloud Firestore
+- **Authentication:** Firebase Authentication
+- **Routing:** GoRouter
+- **UI Responsiveness:** `flutter_screenutil`
 
-## 🚀 كيفية تشغيل المشروع
+## 🚀 How to Run
 
-1. قم بتحميل المستودع (Clone the repo):
+1. Clone the repository:
 ```bash
-git clone https://github.com/your-username/se7ty.git
+git clone https://github.com/ahmedgaafar233/se7ety.git
 ```
 
-2. قم بتثبيت الحزم المطلوبة:
+2. Install dependencies:
 ```bash
 flutter pub get
 ```
 
-3. تأكد من أنك قمت بربط المشروع بـ Firebase (عن طريق `flutterfire configure`) إذا كنت تريد تشغيل نسختك الخاصة.
+3. Ensure Firebase is configured (`flutterfire configure`) if you want to run your own instance.
 
-4. قم بتشغيل التطبيق:
+4. Run the app:
 ```bash
 flutter run
 ```
 
 ---
-## 💖 شكر وتقدير (Acknowledgments)
 
-نتقدم بخالص الشكر والتقدير إلى **EraaSoft** على الدعم والتوجيه المستمر. 
-شكر خاص جداً إلى:
-- **المهندس/ سيد عبد العزيز** 
-- **المهندس/ عبد الرحمن أنس عز**
+## 💖 Acknowledgments
 
-لمساهماتهم وجهودهم الكبيرة في هذا العمل.
+We would like to express our deepest gratitude to **EraaSoft** for their continuous support and guidance throughout this project.
+
+Special thanks to the amazing engineers who made this possible:
+- **Eng. Sayed Abdul-Aziz**
+- **Eng. Abdalrahman Nasser**
+- **Eng. Anas Ezz**
+
+Your contributions and mentorship have been invaluable!
 
 ---
 <div align="center">
-  <i>تم تطوير هذا التطبيق بحب 💙 لتقديم أفضل تجربة للمرضى والأطباء.</i>
+  <i>Developed with 💙 to provide the best healthcare experience.</i>
 </div>
