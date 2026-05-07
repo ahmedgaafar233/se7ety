@@ -89,7 +89,7 @@ flutter run
 We would like to express our deepest gratitude to **EraaSoft** for their continuous support and guidance throughout this project.
 
 Special thanks to the amazing engineers who made this possible:
-- **Eng. Sayed Abdul-Aziz**
+- **Eng. Sayed Abdul-Aziz 💙👏🌟** (Our inspiring mentor and teacher)
 - **Eng. Abdalrahman Nasser**
 - **Eng. Anas Ezz**
 
